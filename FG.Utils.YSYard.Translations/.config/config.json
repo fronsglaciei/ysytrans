@@ -1,0 +1,9 @@
+{
+  "PluginFolderPath": "click to pick folder",
+  "IgnoreListPath": ".config/ignore.json",
+  "StaticWordTranslations": {
+    "エキストラ": "エクストラ",
+    "ミス・キャッツ": "ミス・ネコミミ"
+  },
+  "TranslationApiUrl": ""
+}
