@@ -31,7 +31,7 @@ Program Files以下など管理者権限が必要なディレクトリにイン�
 
 #### 2.当MODの導入
 
-[Releases](https://github.com/fronsglaciei/YSYMod.Translations/releases)から`fg.mods.ysyard.translations.jp.zip`をダウンロードして以下のようなディレクトリ階層に配置してください.
+[Releases](https://github.com/fronsglaciei/ysytrans/releases)から`fg.mods.ysyard.translations.jp.zip`をダウンロードして以下のようなディレクトリ階層に配置してください.
 
 * Yog-Sothoth's Yardインストール先(Steam)\steamapps\common\Yog-Sothoth's Yard等
   * Yog-Sothoth's Yard.exe等の公式ファイル
