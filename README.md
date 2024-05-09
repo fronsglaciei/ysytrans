@@ -1,4 +1,4 @@
-# Yog-Sothoth's Yard Unofficial Japanese Translation Mod
+# [Yog-Sothoth's Yard Unofficial Japanese Translation Mod](https://github.com/fronsglaciei/ysytrans/releases)
 
 **Yog-Sothoth's Yard**の非公式日本語化MODを公開するリポジトリです.
 
