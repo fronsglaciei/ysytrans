@@ -26,8 +26,19 @@ namespace FG.Mods.YSYard.Translations.Services
             {
                 return;
             }
-            
-            var serializer0 = new DataContractJsonSerializer(typeof(TranslatedLanguages), _serializerSettings);
+
+			if (!File.Exists(PathProvider.PathDef.TranslatedLanguagesSerializedPath))
+			{
+				ModEntry.RootLogger.LogError($"Missed file: {PathProvider.PathDef.TranslatedLanguagesSerializedPath}");
+				return;
+			}
+			if (!File.Exists(PathProvider.PathDef.TranslatedLanguageTalksSerializedPath))
+			{
+				ModEntry.RootLogger.LogError($"Missed file: {PathProvider.PathDef.TranslatedLanguageTalksSerializedPath}");
+				return;
+			}
+
+			var serializer0 = new DataContractJsonSerializer(typeof(TranslatedLanguages), _serializerSettings);
             var json0 = File.ReadAllText(PathProvider.PathDef.TranslatedLanguagesSerializedPath);
             using (var ms = new MemoryStream(Encoding.Default.GetBytes(json0)))
             {

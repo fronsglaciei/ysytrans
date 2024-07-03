@@ -289,6 +289,140 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
         return true;
     }
 
+    public async Task ReportDiffAsync(string oldPluginFolderPath)
+    {
+        if (this._pathDef == null)
+        {
+            return;
+        }
+        if (string.IsNullOrEmpty(oldPluginFolderPath) || !Directory.Exists(oldPluginFolderPath))
+        {
+            return;
+        }
+
+        var oldPathDef = new LanguagePathDefs(oldPluginFolderPath);
+        if (!oldPathDef.IsValid)
+        {
+            return;
+        }
+
+        var oldLanguages = new ConcurrentDictionary<int, string>();
+        var taskOldLanguages = Directory.EnumerateFiles(oldPathDef.LanguagesPath).Select(x => Task.Run(() =>
+        {
+            if (oldPathDef.TryGetKeyFromPath(x, out var key))
+            {
+                var text = File.ReadAllText(x, Encoding.UTF8);
+                oldLanguages.TryAdd(key, text);
+            }
+        }));
+        var oldLanguageTalks = new ConcurrentDictionary<int, string>();
+        var taskOldLanguageTalks = Directory.EnumerateFiles(oldPathDef.LanguageTalksPath).Select(x => Task.Run(() =>
+        {
+            if (oldPathDef.TryGetKeyFromPath(x, out var key))
+            {
+                var text = File.ReadAllText(x, Encoding.UTF8);
+                oldLanguageTalks.TryAdd(key, text);
+            }
+        }));
+        await Task.WhenAll(new[] { taskOldLanguages, taskOldLanguageTalks }.SelectMany(x => x)).ConfigureAwait(false);
+
+        var curLanguages = new ConcurrentDictionary<int, string>();
+        var taskCurLanguages = Directory.EnumerateFiles(this._pathDef.LanguagesPath).Select(x => Task.Run(() =>
+        {
+            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            {
+                var text = File.ReadAllText(x, Encoding.UTF8);
+                curLanguages.TryAdd(key, text);
+            }
+        }));
+        var curLanguageTalks = new ConcurrentDictionary<int, string>();
+        var taskCurLanguageTalks = Directory.EnumerateFiles(this._pathDef.LanguageTalksPath).Select(x => Task.Run(() =>
+        {
+            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            {
+                var text = File.ReadAllText(x, Encoding.UTF8);
+                curLanguageTalks.TryAdd(key, text);
+            }
+        }));
+        await Task.WhenAll(new[] { taskCurLanguages, taskCurLanguageTalks }.SelectMany(x => x)).ConfigureAwait(false);
+
+        var sb = new StringBuilder();
+        var oldLanguageIndices = oldLanguages.Keys.ToHashSet();
+        oldLanguageIndices.ExceptWith(curLanguages.Keys);
+        sb.AppendLine("[Deprecated Languages]");
+        foreach (var oldLanguageIndex in oldLanguageIndices)
+        {
+            sb.AppendLine($"  {oldLanguageIndex}");
+        }
+        sb.AppendLine();
+
+        var curLanguageIndices = curLanguages.Keys.ToHashSet();
+        curLanguageIndices.ExceptWith(oldLanguages.Keys);
+        sb.AppendLine("[Appended Languages]");
+        foreach (var curLanguageIndex in curLanguageIndices)
+        {
+            sb.AppendLine($"  {curLanguageIndex}");
+        }
+        sb.AppendLine();
+
+        var sharedLanguageIndices = oldLanguages.Keys.ToHashSet();
+        sharedLanguageIndices.IntersectWith(curLanguages.Keys);
+        sb.AppendLine("[Updated Languages]");
+        foreach (var sharedIndex in sharedLanguageIndices)
+        {
+            if (oldLanguages.TryGetValue(sharedIndex, out var oldText)
+                && curLanguages.TryGetValue(sharedIndex, out var curText)
+                && oldText != curText)
+            {
+                sb.AppendLine($"<{sharedIndex}>---");
+                sb.AppendLine(oldText);
+                sb.AppendLine("↓");
+                sb.AppendLine(curText);
+                sb.AppendLine("---");
+            }
+        }
+        sb.AppendLine();
+
+        var oldLanguageTalkIndices = oldLanguageTalks.Keys.ToHashSet();
+        oldLanguageTalkIndices.ExceptWith(curLanguageTalks.Keys);
+        sb.AppendLine("[Deprecated LanguageTalks]");
+        foreach (var oldLanguageTalkIndex in oldLanguageTalkIndices)
+        {
+            sb.AppendLine($"  {oldLanguageTalkIndex}");
+        }
+        sb.AppendLine();
+
+        var curLanguageTalkIndices = curLanguageTalks.Keys.ToHashSet();
+        curLanguageTalkIndices.ExceptWith(oldLanguageTalks.Keys);
+        sb.AppendLine("[Appended LanguageTalks]");
+        foreach (var curLanguageTalkIndex in curLanguageTalkIndices)
+        {
+            sb.AppendLine($"  {curLanguageTalkIndex}");
+        }
+        sb.AppendLine();
+
+        var sharedLanguageTalkIndices = oldLanguageTalks.Keys.ToHashSet();
+        sharedLanguageTalkIndices.IntersectWith(curLanguageTalks.Keys);
+        sb.AppendLine("[Updated LanguageTalks]");
+        foreach (var sharedIndex in sharedLanguageTalkIndices)
+        {
+            if (oldLanguageTalks.TryGetValue(sharedIndex, out var oldText)
+                && curLanguageTalks.TryGetValue(sharedIndex, out var curText)
+                && oldText != curText)
+            {
+                sb.AppendLine($"<{sharedIndex}>---");
+                sb.AppendLine(oldText);
+                sb.AppendLine("↓");
+                sb.AppendLine(curText);
+                sb.AppendLine("---");
+            }
+        }
+        sb.AppendLine();
+
+        var reportPath = Path.Combine(this._pathDef.PluginRootPath, "diff_Translations.txt");
+        File.WriteAllText(reportPath, sb.ToString(), Encoding.UTF8);
+    }
+
     public void Dispose()
     {
         this._cts.Cancel();

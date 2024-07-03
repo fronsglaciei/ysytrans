@@ -13,4 +13,6 @@ public interface ILanguageRepositoryService
 	bool TryGetNextContainer(KeyNotification kn, int indexOffset, [MaybeNullWhen(false)] out LanguageContainer container);
 
 	Task<IEnumerable<KeyNotification>> SearchContainersAsync(string pattern);
+
+    Task ReportDiffAsync(string oldPluginFolderPath);
 }

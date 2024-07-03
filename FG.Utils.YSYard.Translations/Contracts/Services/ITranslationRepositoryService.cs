@@ -17,4 +17,6 @@ public interface ITranslationRepositoryService
     Task<bool> LoadBackupAsync(string path);
 
     Task<bool> SerializeAsync();
+
+    Task ReportDiffAsync(string oldPluginFolderPath);
 }

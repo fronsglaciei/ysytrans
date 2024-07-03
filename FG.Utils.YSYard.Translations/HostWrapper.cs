@@ -1,4 +1,4 @@
-using FG.Utils.YSYard.Translations.Contracts.Services;
+﻿using FG.Utils.YSYard.Translations.Contracts.Services;
 using FG.Utils.YSYard.Translations.Helpers;
 using FG.Utils.YSYard.Translations.Models;
 using FG.Utils.YSYard.Translations.Services;
@@ -10,24 +10,19 @@ using MudBlazor.Services;
 
 namespace FG.Utils.YSYard.Translations;
 
-public static class Startup
+public class HostWrapper : IDisposable
 {
-    public static IServiceProvider? Services { get; private set; }
+    private readonly IHost _host =
+        Host
+        .CreateDefaultBuilder()
+        .ConfigureAppConfiguration(WireupConfigurations)
+        .ConfigureServices(WireupServices)
+        .Build();
 
-    public static void Init()
-    {
-        var host = Host
-            .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(WireupConfigurations)
-            .ConfigureServices(WireupServices)
-            .Build();
-        Services = host.Services;
-    }
+    public IServiceProvider Services => this._host.Services;
 
     private static void WireupConfigurations(IConfigurationBuilder configs)
-    {
-        configs.AddJsonFile(".config/config.json");
-    }
+        => configs.AddJsonFile(".config/config.json");
 
     private static void WireupServices(HostBuilderContext context, IServiceCollection services)
     {
@@ -36,7 +31,7 @@ public static class Startup
         {
             config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
         });
-        services.AddSingleton<IFormMessengerService, FormMessengerService>();
+        services.AddSingleton<ICustomDialogService, CustomDialogService>();
         services.AddSingleton<IKeyNotificationService, KeyNotificationService>();
         services.AddSingleton<ILanguageRepositoryService, LanguageRepositoryService>();
         services.AddSingleton<ITranslationRepositoryService, TranslationRepositoryService>();
@@ -44,13 +39,18 @@ public static class Startup
         services.AddSingleton<ITranslationApiService, GoogleLanguageApiService>();
         services.AddSingleton<IIgnoreListService, IgnoreListService>();
 
-		services.ConfigureWritable<AppConfig>(context, ".config/config.json");
+        services.ConfigureWritable<AppConfig>(context, ".config/config.json");
 
 #if DEBUG
-		services.AddBlazorWebViewDeveloperTools();
+        services.AddBlazorWebViewDeveloperTools();
 #endif
     }
 
-    // force get a non-nullable service
-    public static T GetService<T>() => Services!.GetService<T>()!;
+    public T? GetService<T>() => this._host.Services.GetService<T>();
+
+    public void Dispose()
+    {
+        this._host.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }

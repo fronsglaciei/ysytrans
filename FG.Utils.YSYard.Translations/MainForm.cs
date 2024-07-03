@@ -1,126 +1,135 @@
 using FG.Utils.YSYard.Translations.Contracts.Services;
-using FG.Utils.YSYard.Translations.Enums;
 using FG.Utils.YSYard.Translations.Interops;
+using FG.Utils.YSYard.Translations.Models;
 using Microsoft.AspNetCore.Components.WebView.WindowsForms;
-using Microsoft.Web.WebView2.Core;
 
 namespace FG.Utils.YSYard.Translations;
 
 public partial class MainForm : Form
 {
-	private readonly IFormMessengerService _messenger;
+    private readonly HostWrapper _host = new();
+
+    private readonly SynchronizationContext _thContext;
 
     public MainForm()
     {
-		this._messenger = Startup.GetService<IFormMessengerService>();
+        if (SynchronizationContext.Current == null)
+        {
+            throw new ApplicationException($"{nameof(MainForm)}");
+        }
+        this._thContext = SynchronizationContext.Current;
 
-		InitializeComponent();
+        var fDialog = this._host.GetService<ICustomDialogService>();
+        if (fDialog != null)
+        {
+            fDialog.OpenFilePicker = this.PickOpenFileAsync;
+            fDialog.SaveFilePicker = this.PickSaveFileAsync;
+            fDialog.FolderPicker = this.PickFolderAsync;
+        }
 
-		this.MainWebView.BlazorWebViewInitialized += (s, e) =>
-		{
-			e.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
-			e.WebView.CoreWebView2.ContextMenuRequested += this.CoreWebView2_ContextMenuRequested;
-			e.WebView.CoreWebView2.WebMessageReceived += this.CoreWebView2_WebMessageReceived;
-		};
+        InitializeComponent();
 
-		NativeMethods.UseImmersiveDarkMode(this.Handle, true);
+        this.MainWebView.BlazorWebViewInitialized += (s, e) =>
+        {
+            e.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
+            e.WebView.CoreWebView2.ContextMenuRequested += this.CoreWebView2_ContextMenuRequested;
+        };
+
+        NativeMethods.UseImmersiveDarkMode(this.Handle, true);
 
         this.MainWebView.HostPage = "wwwroot/index.html";
-        this.MainWebView.Services = Startup.Services!;
+        this.MainWebView.Services = this._host.Services;
         this.MainWebView.StartPath = "/";
 
         this.MainWebView.RootComponents.Add<Main>("#app");
     }
 
-	private void CoreWebView2_ContextMenuRequested(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2ContextMenuRequestedEventArgs e)
-	{
-		// https://github.com/dotnet/maui/issues/11398
+    private void CoreWebView2_ContextMenuRequested(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2ContextMenuRequestedEventArgs e)
+    {
+        // https://github.com/dotnet/maui/issues/11398
 
-		if (e.ContextMenuTarget.IsEditable)
-		{
-			var itemNamesToRemove = new[] { "share", "webSelect", "webCapture", "inspectElement" };
-			var menuIndexesToRemove =
-				e.MenuItems
-					.Select((m, i) => (m, i))
-					.Where(m => itemNamesToRemove.Contains(m.m.Name))
-					.Select(m => m.i)
-					.Reverse();
+        if (e.ContextMenuTarget.IsEditable)
+        {
+            var itemNamesToRemove = new[] { "share", "webSelect", "webCapture", "inspectElement" };
+            var menuIndexesToRemove =
+                e.MenuItems
+                    .Select((m, i) => (m, i))
+                    .Where(m => itemNamesToRemove.Contains(m.m.Name))
+                    .Select(m => m.i)
+                    .Reverse();
 
-			foreach (var menuIndexToRemove in menuIndexesToRemove)
-			{
-				e.MenuItems.RemoveAt(menuIndexToRemove);
-			}
+            foreach (var menuIndexToRemove in menuIndexesToRemove)
+            {
+                e.MenuItems.RemoveAt(menuIndexToRemove);
+            }
 
-			while (e.MenuItems.Last().Kind == Microsoft.Web.WebView2.Core.CoreWebView2ContextMenuItemKind.Separator)
-			{
-				e.MenuItems.RemoveAt(e.MenuItems.Count - 1);
-			}
-		}
-		else
-		{
-			e.Handled = true;
-		}
-	}
+            while (e.MenuItems.Last().Kind == Microsoft.Web.WebView2.Core.CoreWebView2ContextMenuItemKind.Separator)
+            {
+                e.MenuItems.RemoveAt(e.MenuItems.Count - 1);
+            }
+        }
+        else
+        {
+            e.Handled = true;
+        }
+    }
 
-	private void CoreWebView2_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
-	{
-		// https://github.com/MicrosoftEdge/WebView2Feedback/issues/3028
-		// https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/threading-model
+    private async Task<string> PickOpenFileAsync(FilePickerOptions? opts)
+    {
+        var tcs = new TaskCompletionSource<string>();
+        this._thContext.Post(_ =>
+        {
+            if (opts != null)
+            {
+                this.MainOpenFilePicker.Filter = opts.FilterString;
+            }
+            if (this.MainOpenFilePicker.ShowDialog() == DialogResult.OK)
+            {
+                tcs.SetResult(this.MainOpenFilePicker.FileName);
+            }
+            else
+            {
+                tcs.SetResult(string.Empty);
+            }
+        }, null);
+        return await tcs.Task;
+    }
 
-		var context = System.Threading.SynchronizationContext.Current;
-		if (context == null)
-		{
-			return;
-		}
+    private async Task<string> PickSaveFileAsync(FilePickerOptions? opts)
+    {
+        var tcs = new TaskCompletionSource<string>();
+        this._thContext.Post(_ =>
+        {
+            if (opts != null)
+            {
+                this.MainSaveFilePicker.Filter = opts.FilterString;
+            }
+            if (this.MainSaveFilePicker.ShowDialog() == DialogResult.OK)
+            {
+                tcs.SetResult(this.MainSaveFilePicker.FileName);
+            }
+            else
+            {
+                tcs.SetResult(string.Empty);
+            }
+        }, null);
+        return await tcs.Task;
+    }
 
-		var msg = e.TryGetWebMessageAsString();
-		var (msgType, id) = this._messenger.ParseMessage(msg);
-		if (msgType == FormMessengerMessageTypes.Undefined)
-		{
-			return;
-		}
-		else if (msgType == FormMessengerMessageTypes.PickFolder)
-		{
-			context.Post(_ =>
-			{
-				var res = this.MainFolderPicker.ShowDialog();
-				if (res == DialogResult.OK)
-				{
-					this._messenger.RespondFolderPath(id, this.MainFolderPicker.SelectedPath);
-				}
-			}, null);
-		}
-		else if (msgType == FormMessengerMessageTypes.PickSaveFile)
-		{
-			context.Post(_ =>
-			{
-				var opts = this._messenger.GetSaveFilePickerOptions(id);
-				if (opts != null)
-				{
-					this.MainSaveFilePicker.Filter = opts.FilterString;
-				}
-				var res = this.MainSaveFilePicker.ShowDialog();
-				if (res == DialogResult.OK)
-				{
-					this._messenger.RespondSaveFilePath(id, this.MainSaveFilePicker.FileName);
-				}
-			}, null);
-		}
-		else if (msgType == FormMessengerMessageTypes.PickOpenFile)
-		{
-			context.Post(_ =>
-			{
-				var opts = this._messenger.GetOpenFilePickerOptions(id);
-				if (opts != null)
-				{
-					this.MainOpenFilePicker.Filter = opts.FilterString;
-				}
-				var res = this.MainOpenFilePicker.ShowDialog();
-				if (res == DialogResult.OK)
-				{
-					this._messenger.RespondOpenFilePath(id, this.MainOpenFilePicker.FileName);
-				}
-			}, null);
-		}
-	}
+    private async Task<string> PickFolderAsync()
+    {
+        var tcs = new TaskCompletionSource<string>();
+        this._thContext.Post(_ =>
+        {
+            if (this.MainFolderPicker.ShowDialog() == DialogResult.OK)
+            {
+                tcs.SetResult(this.MainFolderPicker.SelectedPath);
+            }
+            else
+            {
+                tcs.SetResult(string.Empty);
+            }
+        }, null);
+        return await tcs.Task;
+    }
 }

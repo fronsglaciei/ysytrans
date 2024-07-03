@@ -1,12 +1,19 @@
-﻿<MudDialog>
+﻿<style>
+    .simple-blur {
+        backdrop-filter: blur(10px);
+    }
+</style>
+
+<MudDialog>
     <DialogContent>
         <MudText>@ContentText</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">キャンセル</MudButton>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+        <MudButton Color="MudBlazor.Color.Secondary" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
     </DialogActions>
 </MudDialog>
+
 @code {
     [CascadingParameter]
     MudDialogInstance MudDialog
@@ -26,12 +33,14 @@
         get; set;
     } = string.Empty;
 
-    [Parameter]
-    public Color Color
+    protected override void OnInitialized()
     {
-        get; set;
+        base.OnInitialized();
+        this.MudDialog.Options.BackgroundClass = "simple-blur";
+        this.MudDialog.SetOptions(this.MudDialog.Options);
     }
 
-    void Submit() => MudDialog.Close(DialogResult.Ok(true));
-    void Cancel() => MudDialog.Cancel();
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
 }

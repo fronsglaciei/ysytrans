@@ -1,8 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
+@inject IDialogService MudDialog
+@inject ICustomDialogService CustomDialog
+
 <MudThemeProvider IsDarkMode=true Theme="MainTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
+<MudPopoverProvider />
 
 <MudLayout>
     <MudAppBar Elevation="0">
@@ -33,6 +37,12 @@
                 }
             }
         };
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.CustomDialog.MudDialog = this.MudDialog;
+    }
 
     private bool _drawerOpen = false;
 

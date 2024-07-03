@@ -3,15 +3,12 @@
 @inherits TranslationPageViewModel
 
 <style>
-.mud-rm-margin > textarea {
-    margin: 0 !important;
-}
-.simple-blur {
-    backdrop-filter: blur(10px);
-}
+    .mud-rm-margin > textarea {
+        margin: 0 !important;
+    }
 </style>
 
-<div class="w-100 p-3 d-flex flex-column gap-2" style="overflow-x: hidden;">
+<MudStack Spacing="1" Class="w-100 p-3" Style="overflow-x: hidden;">
     <MudExpansionPanel Class="w-100">
         <TitleContent>
             <MudText Typo="Typo.caption">プラグイン設定</MudText>
@@ -49,78 +46,87 @@
                         </MudStack>
                     </ChildContent>
                 </MudExpansionPanel>
-                <MudField Label="通知リスト" DisableUnderLine="true" Class="w-100 mb-2">
-                    <div class="w-100" style="height: calc(100vh - 16.5rem); overflow-y: auto;">
-                        <MudStack Spacing="1">
-                            @foreach (var lcvm in this.NotifiedLanguages)
-                            {
-                                <div class="w-100 p-2 rounded notified-lang" @onclick="lcvm.OnClick">
-                                    <div class="d-flex gap-2 align-items-center">
-                                        <MudIcon Icon="@(lcvm.KeyType == LanguageKeyTypes.Language ? Icons.Material.Filled.Translate : Icons.Material.Filled.Chat)" Size="Size.Small" />
-                                        <MudText Class="flex-grow-1"><b>@lcvm.Key</b></MudText>
-                                        <MudIconButton Icon="@(lcvm.IsIgnored ? Icons.Material.Filled.Visibility : Icons.Material.Filled.DisabledVisible)" Size="Size.Small"
-                                            Style="z-index: 1;" OnClick="lcvm.OnToggleIgnored" />
-                                        <MudIconButton Icon="@Icons.Material.Filled.Cancel" Size="Size.Small" Style="z-index: 1;" OnClick="lcvm.OnRemove" />
-                                    </div>
-                                    <MudDivider DividerType="DividerType.Middle" Class="my-2" />
-                                    <MudText Typo="Typo.caption">@lcvm.Description</MudText>
+                <MudField Label="通知リスト" Underline="false" Class="w-100 mb-2">
+                    <MudStack Spacing="1" Class="w-100" Style="height: calc(100vh - 16.5rem); overflow-y: auto;">
+                        @foreach (var lcvm in this.NotifiedLanguages)
+                        {
+                            <div class="w-100 p-2 rounded notified-lang" @onclick="lcvm.OnClick">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <MudIcon Icon="@(lcvm.KeyType == LanguageKeyTypes.Language ? Icons.Material.Filled.Translate : Icons.Material.Filled.Chat)" Size="Size.Small" />
+                                    <MudText Class="flex-grow-1"><b>@lcvm.Key</b></MudText>
+                                    <MudIconButton Icon="@(lcvm.IsIgnored ? Icons.Material.Filled.Visibility : Icons.Material.Filled.DisabledVisible)" Size="Size.Small"
+                                                   Style="z-index: 1;" OnClick="lcvm.OnToggleIgnored" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Cancel" Size="Size.Small" Style="z-index: 1;" OnClick="lcvm.OnRemove" />
                                 </div>
-                            }
-                        </MudStack>
-                    </div>
+                                <MudDivider DividerType="DividerType.Middle" Class="my-2" />
+                                <MudText Typo="Typo.caption">@lcvm.Description</MudText>
+                            </div>
+                        }
+                    </MudStack>
                 </MudField>
             </div>
-            <div class="w-100 p-2 pb-0 d-flex flex-column gap-2">
-                <div class="w-100 d-flex flex-row-reverse">
-                    <MudSwitch T="bool" Label="APIを使用する" Size="Size.Small" Color="Color.Primary" @bind-Value="IsTranslationApiUsed" />
+            <MudStack Spacing="2" Class="w-100 p-2 pb-0">
+                <MudStack Row="true" Class="w-100">
                     <MudText Class="flex-grow-1" Typo="Typo.caption">発言者(台本機能使用時のみ有効)：@SpeakerName</MudText>
-                </div>
-                <div class="w-100 d-grid gap-2" style="grid-template-columns: 1fr 1fr;">
-                    <MudField Label="ユーザー翻訳" Variant="Variant.Outlined" Class="w-100">
-                        <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 2); overflow-y: auto;">
-                            <MudInput T="string" @bind-Value="SelectedTranslationWork.UserTranslation" Immediate="true" OnKeyDown="SelectedTranslationWork.OnKeyDown"
-                                AutoGrow="true" DisableUnderLine="true" Margin="Margin.None" Class="w-100 h-100 p-0 mud-rm-margin" />
-                        </div>
-                    </MudField>
-                    <MudField Label="API翻訳" Variant="Variant.Outlined" Class="w-100">
-                        <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 2); overflow-y: auto;">
-                            @foreach (var item in this.ApiTranslatedString.Split('\n'))
-                            {
-                                <div style="line-height: 1.2rem;">@item</div>
-                            }
-                        </div>
-                    </MudField>
-                </div>
-                <div class="w-100 d-grid gap-2" style="grid-template-columns: 1fr 1fr 1fr;">
-                    <MudField Label="原文" Variant="Variant.Outlined" Class="w-100">
-                        <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 3); overflow-y: auto;">
-                            @foreach (var item in (this.SelectedTranslationWork.SimpleChinese ?? string.Empty).Split('\n'))
-                            {
-                                <div style="line-height: 1.2rem;">@item</div>
-                            }
-                        </div>
-                    </MudField>
-                    <MudField Label="公式英訳" Variant="Variant.Outlined" Class="w-100">
-                        <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 3); overflow-y: auto;">
-                            @foreach (var item in (this.SelectedTranslationWork.English ?? string.Empty).Split('\n'))
-                            {
-                                <div style="line-height: 1.2rem;">@item</div>
-                            }
-                        </div>
-                    </MudField>
-                    <MudField Label="公式和訳" Variant="Variant.Outlined" Class="w-100">
-                        <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 3); overflow-y: auto;">
-                            @foreach (var item in (this.SelectedTranslationWork.Japanese ?? string.Empty).Split('\n'))
-                            {
-                                <div style="line-height: 1.2rem;">@item</div>
-                            }
-                        </div>
-                    </MudField>
-                </div>
-            </div>
+                    <MudSpacer />
+                    <MudSwitch @bind-Value="IsTranslationApiUsed" Label="APIを使用する" Size="Size.Small" Color="Color.Primary" />
+                </MudStack>
+                <MudGrid Class="w-100" Spacing="2">
+                    <MudItem xs="6">
+                        <MudField Label="ユーザー翻訳" Variant="Variant.Outlined" Class="w-100">
+                            <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 2); overflow-y: auto;">
+                                <MudInput T="string" @bind-Value="SelectedTranslationWork.UserTranslation" Immediate="true" OnKeyDown="SelectedTranslationWork.OnKeyDown"
+                                          AutoGrow="true" Underline="false" Margin="Margin.None" Class="w-100 h-100 p-0 mud-rm-margin" />
+                            </div>
+                        </MudField>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudField Label="API翻訳" Variant="Variant.Outlined" Class="w-100">
+                            <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 2); overflow-y: auto;">
+                                @foreach (var item in this.ApiTranslatedString.Split('\n'))
+                                {
+                                    <div style="line-height: 1.2rem;">@item</div>
+                                }
+                            </div>
+                        </MudField>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="w-100" Spacing="2">
+                    <MudItem xs="4">
+                        <MudField Label="原文" Variant="Variant.Outlined" Class="w-100">
+                            <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 3); overflow-y: auto;">
+                                @foreach (var item in (this.SelectedTranslationWork.SimpleChinese ?? string.Empty).Split('\n'))
+                                {
+                                    <div style="line-height: 1.2rem;">@item</div>
+                                }
+                            </div>
+                        </MudField>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudField Label="公式英訳" Variant="Variant.Outlined" Class="w-100">
+                            <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 3); overflow-y: auto;">
+                                @foreach (var item in (this.SelectedTranslationWork.English ?? string.Empty).Split('\n'))
+                                {
+                                    <div style="line-height: 1.2rem;">@item</div>
+                                }
+                            </div>
+                        </MudField>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudField Label="公式和訳" Variant="Variant.Outlined" Class="w-100">
+                            <div class="w-100" style="height: calc((100vh - 18.5rem) / 5 * 3); overflow-y: auto;">
+                                @foreach (var item in (this.SelectedTranslationWork.Japanese ?? string.Empty).Split('\n'))
+                                {
+                                    <div style="line-height: 1.2rem;">@item</div>
+                                }
+                            </div>
+                        </MudField>
+                    </MudItem>
+                </MudGrid>
+            </MudStack>
         </div>
         <div class="@(_isRightBarHidden ? "t-tool-bar t-tool-bar-hidden" : "t-tool-bar")">
-            <MudIconButton Icon="@Icons.Material.Filled.Build" Variant="Variant.Filled" Color="Color.Primary" Class="my-2" OnClick="ToggleSideBar"/>
+            <MudIconButton Icon="@Icons.Material.Filled.Build" Variant="Variant.Filled" Color="Color.Primary" Class="my-2" OnClick="ToggleSideBar" />
             <div class="@(_isRightBarHidden ? "t-tool-bar-content t-tool-bar-content-hidden" : "t-tool-bar-content")">
                 <MudExpansionPanels @ref="ToolBarExpansionPanelsRef">
                     <MudExpansionPanel>
@@ -140,7 +146,7 @@
                                     <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" OnClick="SetNextTranslationWork" />
                                 </div>
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.ArrowUpward"
-                                    OnClick="SetTranslationWorkBySelectedKey">現在の内容で指定</MudButton>
+                                           OnClick="SetTranslationWorkBySelectedKey">現在の内容で指定</MudButton>
                             </MudStack>
                         </ChildContent>
                     </MudExpansionPanel>
@@ -153,7 +159,7 @@
                             <MudStack Spacing="1">
                                 <MudTextField Label="単語または正規表現" @bind-Value="LanguageSearchPattern" />
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Search"
-                                    OnClick="SearchLanguagePattern">検索</MudButton>
+                                           OnClick="SearchLanguagePattern">検索</MudButton>
                             </MudStack>
                         </ChildContent>
                     </MudExpansionPanel>
@@ -166,7 +172,7 @@
                             <MudStack Spacing="1">
                                 <MudTextField Label="単語または正規表現" @bind-Value="TranslationSearchPattern" />
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Search"
-                                    OnClick="SearchTranslationPattern">検索</MudButton>
+                                           OnClick="SearchTranslationPattern">検索</MudButton>
                             </MudStack>
                         </ChildContent>
                     </MudExpansionPanel>
@@ -188,9 +194,9 @@
                                     <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" OnClick="SetNextStoryIndex" />
                                 </div>
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.ArrowUpward"
-                                    OnClick="SetTranslationWorkByStory">キーとインデックスで指定</MudButton>
+                                           OnClick="SetTranslationWorkByStory">キーとインデックスで指定</MudButton>
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.ManageSearch"
-                                    OnClick="SearchStoryByLanguageTalk">翻訳中のキーから検索して指定</MudButton>
+                                           OnClick="SearchStoryByLanguageTalk">翻訳中のキーから検索して指定</MudButton>
                             </MudStack>
                         </ChildContent>
                     </MudExpansionPanel>
@@ -202,9 +208,9 @@
                         <ChildContent>
                             <MudStack Spacing="1">
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save"
-                                    OnClick="SaveBackup">ファイルを書き出し</MudButton>
+                                           OnClick="SaveBackup">ファイルを書き出し</MudButton>
                                 <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Update"
-                                    OnClick="LoadBackup">ファイルを読み込み</MudButton>
+                                           OnClick="LoadBackup">ファイルを読み込み</MudButton>
                             </MudStack>
                         </ChildContent>
                     </MudExpansionPanel>
@@ -216,7 +222,19 @@
                         <ChildContent>
                             <MudStack Spacing="1">
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save"
-                                    OnClick="SerializeTranslationsAsync">書き出し</MudButton>
+                                           OnClick="SerializeTranslations">書き出し</MudButton>
+                            </MudStack>
+                        </ChildContent>
+                    </MudExpansionPanel>
+                    <MudExpansionPanel>
+                        <TitleContent>
+                            <MudText Typo="Typo.h6">差分確認</MudText>
+                            <MudText Typo="Typo.caption">プラグインフォルダを比較します.</MudText>
+                        </TitleContent>
+                        <ChildContent>
+                            <MudStack Spacing="1">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Difference"
+                                           OnClick="ReportDiff">レポートを出力</MudButton>
                             </MudStack>
                         </ChildContent>
                     </MudExpansionPanel>
@@ -224,7 +242,7 @@
             </div>
         </div>
     </div>
-</div>
+</MudStack>
 
 @code {
     private bool _isRightBarHidden = true;
@@ -232,34 +250,11 @@
     private MudExpansionPanels ToolBarExpansionPanelsRef
     {
         get; set;
-    } = null!;
+    } = new();
 
     private void ToggleSideBar()
     {
-        this.ToolBarExpansionPanelsRef?.CollapseAll();
+        this.ToolBarExpansionPanelsRef?.CollapseAllAsync();
         this._isRightBarHidden = !this._isRightBarHidden;
-    }
-
-    protected override void LoadBackup()
-    {
-        var obj = new DialogParameters<ConfirmDialog>
-        {
-            { x => x.ButtonText, "実行" },
-            { x => x.ContentText, "バックアップをロードすると現在の翻訳ファイル群は上書きされます. よろしいですか？" },
-            { x => x.Color, MudBlazor.Color.Secondary }
-        };
-        var opts = new DialogOptions
-        {
-            ClassBackground = "simple-blur"
-        };
-        var dialog = Dialog.Show<ConfirmDialog>("確認", obj, opts);
-        Task.Run(async () =>
-        {
-            var res = await dialog.Result.ConfigureAwait(false);
-            if (res.Data is bool retOk && retOk)
-            {
-                base.LoadBackup();
-            }
-        });
     }
 }
