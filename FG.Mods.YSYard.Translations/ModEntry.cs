@@ -14,7 +14,7 @@ namespace FG.Mods.YSYard.Translations
 
         public const string PLUGIN_NAME = "Unofficial Japanese Translation Mod";
 
-        public const string PLUGIN_VERSION = "1.0.0";
+        public const string PLUGIN_VERSION = "1.0.1";
 
         public static ManualLogSource RootLogger
         {

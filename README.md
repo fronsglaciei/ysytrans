@@ -8,8 +8,8 @@ Unity汎用Moddingフレームワークの**BepInEx**のプラグインとして
 
 以下の環境で作成および動作確認しています.
 
-* Yog-Sothoth's Yard - ver1.0.10
-* BepInEx 5.4.22
+* Yog-Sothoth's Yard - steam 2024/06/30版
+* BepInEx 5.4.23.2
 * Windows 11
 
 ## MOD導入
@@ -18,7 +18,7 @@ Unity汎用Moddingフレームワークの**BepInEx**のプラグインとして
 
 #### 1.BepInExの導入
 
-[BepInEx](https://github.com/BepInEx/BepInEx/releases)の64bit版`BepInEx_x64_5.4.22.0.zip`をダウンロードして以下のようなディレクトリ階層に配置してください.
+[BepInEx](https://github.com/BepInEx/BepInEx/releases)の64bit版`BepInEx_x64_5.4.23.2.zip`をダウンロードして以下のようなディレクトリ階層に配置してください.
 
 * Yog-Sothoth's Yardインストール先(Steam)\steamapps\common\Yog-Sothoth's Yard等
   * Yog-Sothoth's Yard.exe等の公式ファイル
@@ -31,7 +31,7 @@ Program Files以下など管理者権限が必要なディレクトリにイン�
 
 #### 2.当MODの導入
 
-[Releases](https://github.com/fronsglaciei/ysytrans/releases)から`fg.mods.ysyard.translations.jp.zip`をダウンロードして以下のようなディレクトリ階層に配置してください.
+[Releases](https://github.com/fronsglaciei/ysytrans/releases)から最新の`fg.mods.ysyard.translations.jp.zip`をダウンロードして以下のようなディレクトリ階層に配置してください.
 
 * Yog-Sothoth's Yardインストール先(Steam)\steamapps\common\Yog-Sothoth's Yard等
   * Yog-Sothoth's Yard.exe等の公式ファイル
