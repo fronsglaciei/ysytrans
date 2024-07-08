@@ -18,7 +18,7 @@ Unity汎用Moddingフレームワークの**BepInEx**のプラグインとして
 
 #### 1.BepInExの導入
 
-[BepInEx](https://github.com/BepInEx/BepInEx/releases)の64bit版`BepInEx_x64_5.4.23.2.zip`をダウンロードして以下のようなディレクトリ階層に配置してください.
+[BepInEx](https://github.com/BepInEx/BepInEx/releases)の64bit版`BepInEx_win_x64_5.4.23.2.zip`をダウンロードして以下のようなディレクトリ階層に配置してください.
 
 * Yog-Sothoth's Yardインストール先(Steam)\steamapps\common\Yog-Sothoth's Yard等
   * Yog-Sothoth's Yard.exe等の公式ファイル
