@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FG.Utils.YSYard.Translation
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FG.Defs.YSYard.Translations", "FG.Defs.YSYard.Translations\FG.Defs.YSYard.Translations.csproj", "{EDA7E070-481D-48A6-8544-7E94BA83589A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FG.Mods.YSYard.Translations", "FG.Mods.YSYard.Translations\FG.Mods.YSYard.Translations.csproj", "{C79E1957-F108-4F58-A5CC-2AB9F5CD1A84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FG.Mods.YSYard.Translations.Mono", "FG.Mods.YSYard.Translations.Mono\FG.Mods.YSYard.Translations.Mono.csproj", "{D9E883C2-F211-454E-BBA5-1C578445D38C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{EDA7E070-481D-48A6-8544-7E94BA83589A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDA7E070-481D-48A6-8544-7E94BA83589A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDA7E070-481D-48A6-8544-7E94BA83589A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C79E1957-F108-4F58-A5CC-2AB9F5CD1A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C79E1957-F108-4F58-A5CC-2AB9F5CD1A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C79E1957-F108-4F58-A5CC-2AB9F5CD1A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C79E1957-F108-4F58-A5CC-2AB9F5CD1A84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9E883C2-F211-454E-BBA5-1C578445D38C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9E883C2-F211-454E-BBA5-1C578445D38C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9E883C2-F211-454E-BBA5-1C578445D38C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9E883C2-F211-454E-BBA5-1C578445D38C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

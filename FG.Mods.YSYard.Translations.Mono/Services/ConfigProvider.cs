@@ -4,20 +4,11 @@ namespace FG.Mods.YSYard.Translations.Services
 {
     public static class ConfigProvider
     {
-        public static ConfigEntry<bool> NotifiesKey
-        {
-            get; private set;
-        }
+        public static ConfigEntry<bool> NotifiesKey { get; private set; }
 
-        public static ConfigEntry<bool> ShowsExportButton
-        {
-            get; private set;
-        }
+        public static ConfigEntry<bool> ShowsExportButton { get; private set; }
 
-        public static ConfigEntry<bool> ShowsReloadTranslationsButton
-        {
-            get; private set;
-        }
+        public static ConfigEntry<bool> ShowsReloadTranslationsButton { get; private set; }
 
         internal static void Init(ConfigFile configFile)
         {

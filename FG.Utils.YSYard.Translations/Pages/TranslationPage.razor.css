@@ -1,6 +1,4 @@
 ﻿.notified-lang {
-    position: relative;
-    overflow: hidden;
     background-color: var(--mud-palette-background);
     cursor: crosshair;
     transition: background-color .1s;
@@ -8,25 +6,6 @@
 
 .notified-lang:hover {
     background-color: rgb(70, 70, 81);
-}
-
-.notified-lang::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: radial-gradient(circle, #fff 10%, transparent 10%) no-repeat 50%;
-    transform: scale(10, 10);
-    opacity: 0;
-    transition: transform 0.3s, opacity 1s;
-}
-
-.notified-lang:active::after {
-    transform: scale(0, 0);
-    transition: 0s;
-    opacity: 0.3;
 }
 
 .t-tool-bar {

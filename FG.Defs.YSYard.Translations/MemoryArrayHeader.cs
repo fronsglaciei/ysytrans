@@ -4,15 +4,9 @@
 	{
 		internal const int HEADER_SIZE = 8;
 
-		internal int Count
-		{
-			get; set;
-		}
+		internal int Count { get; set; }
 
-		internal MemoryArrayStatus Status
-		{
-			get; set;
-		}
+		internal MemoryArrayStatus Status { get; set; }
 
 		internal static MemoryArrayHeader Idle => new MemoryArrayHeader
 		{

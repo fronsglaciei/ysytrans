@@ -22,35 +22,17 @@ namespace FG.Defs.YSYard.Translations
 
 		private const string TRANSLATED_LANGUAGE_TALKS_SERIALIZED = "translatedLanguageTalks.json";
 
-		public string PluginRootPath
-		{
-			get;
-		} = "nowhere";
+		public string PluginRootPath { get; } = "nowhere";
 
-		public string LanguagesPath
-		{
-			get;
-		} = "nowhere";
+		public string LanguagesPath { get; } = "nowhere";
 
-		public string LanguagesExportedPath
-		{
-			get;
-		} = "nowhere";
+		public string LanguagesExportedPath { get; } = "nowhere";
 
-		public string LanguageTalksPath
-		{
-			get;
-		} = "nowhere";
+		public string LanguageTalksPath { get; } = "nowhere";
 
-		public string LanguageTalksExportedPath
-		{
-			get;
-		} = "nowhere";
+		public string LanguageTalksExportedPath { get; } = "nowhere";
 
-		public string StoriesPath
-		{
-			get;
-		} = "nowhere";
+		public string StoriesPath { get; } = "nowhere";
 
 		public string TranslatedLanguagesSerializedPath
 			=> Path.Combine(this.PluginRootPath, TRANSLATED_LANGUAGES_SERIALIZED);

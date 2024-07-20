@@ -7,25 +7,13 @@ namespace FG.Utils.YSYard.Translations.Services;
 
 public class CustomDialogService : ICustomDialogService
 {
-    public IDialogService? MudDialog
-    {
-        get; set;
-    }
+    public IDialogService? MudDialog { get; set; }
 
-    public Func<FilePickerOptions?, Task<string>>? OpenFilePicker
-    {
-        get; set;
-    }
+    public Func<FilePickerOptions?, Task<string>>? OpenFilePicker { get; set; }
 
-    public Func<FilePickerOptions?, Task<string>>? SaveFilePicker
-    {
-        get; set;
-    }
+    public Func<FilePickerOptions?, Task<string>>? SaveFilePicker { get; set; }
 
-    public Func<Task<string>>? FolderPicker
-    {
-        get; set;
-    }
+    public Func<Task<string>>? FolderPicker { get; set; }
 
     public async Task<bool> ConfirmAsync(string content, string? title = null, string? buttonText = null)
     {

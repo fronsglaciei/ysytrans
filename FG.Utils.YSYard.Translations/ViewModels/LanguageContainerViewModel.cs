@@ -12,10 +12,7 @@ public class LanguageContainerViewModel(
 {
     private readonly LanguageContainer _lc = lc;
 
-    public bool IsIgnored
-    {
-        get; set;
-    } = isIgnored;
+    public bool IsIgnored { get; set; } = isIgnored;
 
     private readonly Action<LanguageContainer> _onClick = onClick;
 

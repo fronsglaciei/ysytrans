@@ -4,10 +4,7 @@ namespace FG.Mods.YSYard.Translations.Services
 {
     public static class PathProvider
     {
-        public static LanguagePathDefs PathDef
-        {
-            get; private set;
-        }
+        public static LanguagePathDefs PathDef { get; private set; }
 
         internal static void Init(string rootPath)
         {

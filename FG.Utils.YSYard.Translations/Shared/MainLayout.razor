@@ -3,40 +3,39 @@
 @inject IDialogService MudDialog
 @inject ICustomDialogService CustomDialog
 
-<MudThemeProvider IsDarkMode=true Theme="MainTheme" />
+<MudThemeProvider IsDarkMode="true" Theme="MainTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
 
 <MudLayout>
     <MudAppBar Elevation="0">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="MudBlazor.Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        Translation Assistant
+        <MudStack Class="w-100" Row="true" AlignItems="AlignItems.Center">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="MudBlazor.Color.Inherit" OnClick="_ => ToggleDrawer()" />
+            <MudText><strong>Translation Assistant</strong></MudText>
+        </MudStack>
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Docked">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        <MudPaper Square="true" Height="calc(100vh - 64px)" Style="background-color: var(--mud-palette-drawer-background); overflow: auto;">
+        <MudPaper Square="true" Height="calc(100vh - var(--mud-appbar-height))" Style="background-color: var(--mud-palette-drawer-background); overflow: auto;">
             @Body
         </MudPaper>
     </MudMainContent>
 </MudLayout>
 
 @code {
-    public MudTheme MainTheme
+    public MudTheme MainTheme { get; } = new()
     {
-        get;
-    } = new()
+        Typography = new()
         {
-            Typography = new()
+            Default = new()
             {
-                Default = new()
-                {
-                    FontFamily = new[] { "Yu Gothic UI", "sans-serif", "Poppins", "Helvetica", "Arial" }
-                }
+                FontFamily = ["Yu Gothic UI", "sans-serif", "Poppins", "Helvetica", "Arial"]
             }
-        };
+        }
+    };
 
     protected override void OnInitialized()
     {
@@ -46,8 +45,5 @@
 
     private bool _drawerOpen = false;
 
-    private void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
+    private void ToggleDrawer() => this._drawerOpen = !this._drawerOpen;
 }

@@ -2,10 +2,7 @@
 
 public class FilePickerOptions
 {
-	public Dictionary<string, List<string>> Filters
-	{
-		get;
-	} = [];
+	public Dictionary<string, List<string>> Filters { get; } = [];
 
 	public string FilterString =>
 		string.Join("|",

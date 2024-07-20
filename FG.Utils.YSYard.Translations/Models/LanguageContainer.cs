@@ -4,42 +4,24 @@ namespace FG.Utils.YSYard.Translations.Models;
 
 public class LanguageContainer : IEquatable<LanguageContainer>
 {
-	public static LanguageContainer Empty
-	{
-		get;
-	} = new();
+	public static LanguageContainer Empty { get; } = new();
 
 	public LanguageKeyTypes KeyType => this.KeyNotification.KeyType;
 
 	public int Key => this.KeyNotification.Key;
 
-	public KeyNotification KeyNotification
-	{
-		get; set;
-	} = new KeyNotification
+	public KeyNotification KeyNotification { get; set; } = new()
 	{
 		Key = -1
 	};
 
-	public string SimpleChinese
-	{
-		get; set;
-	} = string.Empty;
+	public string SimpleChinese { get; set; } = string.Empty;
 
-	public string TraditionalChinese
-	{
-		get; set;
-	} = string.Empty;
+	public string TraditionalChinese { get; set; } = string.Empty;
 
-	public string English
-	{
-		get; set;
-	} = string.Empty;
+	public string English { get; set; } = string.Empty;
 
-	public string Japanese
-	{
-		get; set;
-	} = string.Empty;
+	public string Japanese { get; set; } = string.Empty;
 
     public bool Equals(LanguageContainer? other)
     {

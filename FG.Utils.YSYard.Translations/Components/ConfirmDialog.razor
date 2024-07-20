@@ -16,22 +16,13 @@
 
 @code {
     [CascadingParameter]
-    MudDialogInstance MudDialog
-    {
-        get; set;
-    } = null!;
+    MudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter]
-    public string ContentText
-    {
-        get; set;
-    } = string.Empty;
+    public string ContentText { get; set; } = string.Empty;
 
     [Parameter]
-    public string ButtonText
-    {
-        get; set;
-    } = string.Empty;
+    public string ButtonText { get; set; } = string.Empty;
 
     protected override void OnInitialized()
     {

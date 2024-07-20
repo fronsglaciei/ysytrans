@@ -11,68 +11,35 @@ namespace FG.Utils.YSYard.Translations.ViewModels;
 public class TranslationPageViewModel : ComponentBase, IDisposable
 {
     [Inject]
-    protected IWritableOptions<AppConfig> AppConfig
-    {
-        get; set;
-    } = null!;
+    protected IWritableOptions<AppConfig> AppConfig { get; set; } = null!;
 
     [Inject]
-    protected ICustomDialogService CustomDialog
-    {
-        get; set;
-    } = null!;
+    protected ICustomDialogService CustomDialog { get; set; } = null!;
 
     [Inject]
-    protected ISnackbar Snackbar
-    {
-        get; set;
-    } = null!;
+    protected ISnackbar Snackbar { get; set; } = null!;
 
     [Inject]
-    protected IKeyNotificationService KeyNotification
-    {
-        get; set;
-    } = null!;
+    protected IKeyNotificationService KeyNotification { get; set; } = null!;
 
     [Inject]
-    protected ILanguageRepositoryService LanguageRepository
-    {
-        get; set;
-    } = null!;
+    protected ILanguageRepositoryService LanguageRepository { get; set; } = null!;
 
     [Inject]
-    protected ITranslationRepositoryService TranslationRepository
-    {
-        get; set;
-    } = null!;
+    protected ITranslationRepositoryService TranslationRepository { get; set; } = null!;
 
     [Inject]
-    protected IStoryRepositoryService StoryRepository
-    {
-        get; set;
-    } = null!;
+    protected IStoryRepositoryService StoryRepository { get; set; } = null!;
 
     [Inject]
-    protected ITranslationApiService TranslationApi
-    {
-        get; set;
-    } = null!;
+    protected ITranslationApiService TranslationApi { get; set; } = null!;
 
     [Inject]
-    protected IIgnoreListService IgnoreList
-    {
-        get; set;
-    } = null!;
+    protected IIgnoreListService IgnoreList { get; set; } = null!;
 
-    protected string PluginFolderPath
-    {
-        get; set;
-    } = "クリックして選択";
+    protected string PluginFolderPath { get; set; } = "クリックして選択";
 
-    protected bool PluginIsFound
-    {
-        get; set;
-    } = false;
+    protected bool PluginIsFound { get; set; } = false;
 
     private LanguageKeyTypes _selectedNotificationFilter;
     protected LanguageKeyTypes SelectedNotificationFilter
@@ -119,56 +86,26 @@ public class TranslationPageViewModel : ComponentBase, IDisposable
         }
     }
 
-    protected string SpeakerName
-    {
-        get; set;
-    } = string.Empty;
+    protected string SpeakerName { get; set; } = string.Empty;
 
-    protected bool IsTranslationApiUsed
-    {
-        get; set;
-    } = true;
+    protected bool IsTranslationApiUsed { get; set; } = true;
 
-    protected ConcurrentStack<LanguageContainerViewModel> NotifiedLanguages
-    {
-        get;
-    } = new();
+    protected ConcurrentStack<LanguageContainerViewModel> NotifiedLanguages { get; } = new();
 
-    protected TranslationWorkViewModel SelectedTranslationWork
-    {
-        get; set;
-    } = new(LanguageContainer.Empty, string.Empty, _ => { });
+    protected TranslationWorkViewModel SelectedTranslationWork { get; set; } = new(LanguageContainer.Empty, string.Empty, _ => { });
 
-    protected string ApiTranslatedString
-    {
-        get; set;
-    } = string.Empty;
+    protected string ApiTranslatedString { get; set; } = string.Empty;
 
-    protected KeyNotification SelectedTranslationKeyNotification
-    {
-        get; set;
-    } = new();
+    protected KeyNotification SelectedTranslationKeyNotification { get; set; } = new();
 
-    protected string LanguageSearchPattern
-    {
-        get; set;
-    } = string.Empty;
+    protected string LanguageSearchPattern { get; set; } = string.Empty;
 
-    protected string TranslationSearchPattern
-    {
-        get; set;
-    } = string.Empty;
+    protected string TranslationSearchPattern { get; set; } = string.Empty;
 
     private StoryContainer? _selectedStory;
-    protected int SelectedStoryId
-    {
-        get; set;
-    }
+    protected int SelectedStoryId { get; set; }
 
-    protected int SelectedStoryIndex
-    {
-        get; set;
-    }
+    protected int SelectedStoryIndex { get; set; }
 
     protected override void OnInitialized()
     {

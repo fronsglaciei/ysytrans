@@ -4,20 +4,11 @@ namespace FG.Defs.YSYard.Translations
 {
     public class KeyNotification : IEquatable<KeyNotification>
 	{
-		public LanguageKeyTypes KeyType
-		{
-			get; set;
-		}
+		public LanguageKeyTypes KeyType { get; set; }
 
-		public int Key
-		{
-			get; set;
-		}
+		public int Key { get; set; }
 
-		public DateTime TimeStamp
-		{
-			get; set;
-		}
+		public DateTime TimeStamp { get; set; }
 
         public bool Equals(KeyNotification other)
 		{

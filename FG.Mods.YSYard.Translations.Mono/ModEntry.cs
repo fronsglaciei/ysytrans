@@ -10,11 +10,11 @@ namespace FG.Mods.YSYard.Translations
     [BepInPlugin(ModEntry.PLUGIN_ID, ModEntry.PLUGIN_NAME, ModEntry.PLUGIN_VERSION)]
     public class ModEntry : BaseUnityPlugin
     {
-        public const string PLUGIN_ID = "fg.mods.ysyard.translations.jp";
+        public const string PLUGIN_ID = "FG.Mods.YSYard.Translations";
 
         public const string PLUGIN_NAME = "Unofficial Japanese Translation Mod";
 
-        public const string PLUGIN_VERSION = "1.0.1";
+        public const string PLUGIN_VERSION = "1.0.2";
 
         public static ManualLogSource RootLogger
         {

@@ -11,42 +11,21 @@ public class TranslationWorkViewModel(
 {
 	private readonly Action<TranslationWorkViewModel> _onSaveRequested = onSaveRequested;
 
-	public LanguageKeyTypes KeyType
-	{
-		get;
-	} = lc.KeyType;
+	public LanguageKeyTypes KeyType { get; } = lc.KeyType;
 
-	public int Key
-	{
-		get;
-	} = lc.Key;
+	public int Key { get; } = lc.Key;
 
 	public KeyNotification KeyNotification => lc.KeyNotification;
 
-	public string SimpleChinese
-	{
-		get;
-	} = lc.SimpleChinese;
+	public string SimpleChinese { get; } = lc.SimpleChinese;
 
-	public string TraditionalChinese
-	{
-		get;
-	} = lc.TraditionalChinese;
+	public string TraditionalChinese { get; } = lc.TraditionalChinese;
 
-	public string English
-	{
-		get;
-	} = lc.English;
+	public string English { get; } = lc.English;
 
-	public string Japanese
-	{
-		get;
-	} = lc.Japanese;
+	public string Japanese { get; } = lc.Japanese;
 
-	public string UserTranslation
-	{
-		get; set;
-	} = userTranslation;
+	public string UserTranslation { get; set; } = userTranslation;
 
 	public void OnKeyDown(KeyboardEventArgs args)
 	{
