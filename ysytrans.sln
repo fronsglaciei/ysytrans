@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FG.Defs.YSYard.Translations
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FG.Mods.YSYard.Translations.Mono", "FG.Mods.YSYard.Translations.Mono\FG.Mods.YSYard.Translations.Mono.csproj", "{D9E883C2-F211-454E-BBA5-1C578445D38C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FG.Mods.YSYard.Translations.IL2CPP", "FG.Mods.YSYard.Translations.IL2CPP\FG.Mods.YSYard.Translations.IL2CPP.csproj", "{FD4DC53F-F4A3-43B9-A649-44C22187CF1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{D9E883C2-F211-454E-BBA5-1C578445D38C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9E883C2-F211-454E-BBA5-1C578445D38C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9E883C2-F211-454E-BBA5-1C578445D38C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD4DC53F-F4A3-43B9-A649-44C22187CF1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD4DC53F-F4A3-43B9-A649-44C22187CF1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD4DC53F-F4A3-43B9-A649-44C22187CF1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD4DC53F-F4A3-43B9-A649-44C22187CF1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
