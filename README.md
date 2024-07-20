@@ -15,9 +15,11 @@ Unity汎用Moddingフレームワークの**BepInEx**のプラグインとして
 <details>
 <summary>当MOD v1.0.2の動作環境</summary>
 
-* Yog-Sothoth's Yard - steam 2024/06/28版
-* BepInEx 5.4.23.2
-* Windows 11
+<ul>
+  <li>"Yog-Sothoth's Yard - steam 2024/06/28版"</li>
+  <li>"BepInEx 5.4.23.2"</li>
+  <li>"Windows 11"</li>
+</ul>
 
 </details>
 
@@ -63,48 +65,66 @@ Program Files以下など管理者権限が必要なディレクトリにイン�
 
 <details>
 <summary>当MOD v1.0.2の導入手順</summary>
+<h4 id="1bepinexの導入-1">1.BepInExの導入<a class="anchorjs-link " href="#1bepinexの導入-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>
+  <a href="https://github.com/BepInEx/BepInEx/releases">BepInEx</a>のIL2CPP Windows 64bit版<code class="language-plaintext highlighter-rouge">BepInEx_win_x64_5.4.23.2.zip</code>をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.
+</p>
 
-#### 1.BepInExの導入
+<ul>
+  <li>Yog-Sothoth’s Yardインストール先(Steam)\steamapps\common\Yog-Sothoth’s Yard等
+    <ul>
+      <li>Yog-Sothoth’s Yard.exe等の公式ファイル</li>
+      <li><strong>winhttp.dll</strong></li>
+      <li><strong>doorstop_config.ini</strong></li>
+      <li><strong>BepInEx</strong></li>
+    </ul>
+  </li>
+</ul>
 
-[BepInEx](https://github.com/BepInEx/BepInEx/releases)の64bit版`BepInEx_win_x64_5.4.23.2.zip`をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.
+<p>⚠ 注意 ⚠
+Program Files以下など管理者権限が必要なディレクトリにインストールされている場合の動作は確認していません.</p>
 
-* Yog-Sothoth's Yardインストール先(Steam)\steamapps\common\Yog-Sothoth's Yard等
-  * Yog-Sothoth's Yard.exe等の公式ファイル
-  * **winhttp.dll**
-  * **doorstop_config.ini**
-  * **BepInEx**
+<h4 id="2当modの導入">2.当MODの導入<a class="anchorjs-link " href="2当modの導入-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 
-⚠ 注意 ⚠
-Program Files以下など管理者権限が必要なディレクトリにインストールされている場合の動作は確認していません.
+<p><a href="https://github.com/fronsglaciei/YSYMod.Translations/releases">Releases</a>からv1.0.2の<code class="language-plaintext highlighter-rouge">FG.Mods.YSYard.Translations.zip</code>をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.</p>
 
-#### 2.当MODの導入
-
-[Releases](https://github.com/fronsglaciei/YSYMod.Translations/releases)からv1.0.2の`FG.Mods.YSYard.Translations.zip`をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.
-
-* Yog-Sothoth's Yardインストール先(Steam)\steamapps\common\Yog-Sothoth's Yard等
-  * Yog-Sothoth's Yard.exe等の公式ファイル
-  * winhttp.dll
-  * doorstop_config.ini
-  * BepInEx
-    * core等のBepInEx公式フォルダ
-    * **plugins**
-      * **FG.Mods.YSYard.Translations**
-        * **FG.Defs.YSYard.Translations.dll**
-        * **FG.Mods.YSYard.Translations.dll**
-        * **translatedLanguages.json**
-        * **translatedLanguageTalks.json**
-
-![ファイルの配置](assets/00_directory_old.png "ファイルの配置")
-
+<ul>
+  <li>Yog-Sothoth’s Yardインストール先(Steam)\steamapps\common\Yog-Sothoth’s Yard等
+    <ul>
+      <li>Yog-Sothoth’s Yard.exe等の公式ファイル</li>
+      <li>winhttp.dll</li>
+      <li>doorstop_config.ini</li>
+      <li>BepInEx
+        <ul>
+          <li>core等のBepInEx公式フォルダ</li>
+          <li><strong>plugins</strong>
+            <ul>
+              <li><strong>FG.Mods.YSYard.Translations</strong>
+                <ul>
+                  <li><strong>FG.Defs.YSYard.Translations.dll</strong></li>
+                  <li><strong>FG.Mods.YSYard.Translations.dll</strong></li>
+                  <li><strong>translatedLanguages.json</strong></li>
+                  <li><strong>translatedLanguageTalks.json</strong></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p><img src="assets/00_directory_old.png" alt="ファイルの配置" title="ファイルの配置"></p>
 </details>
 
 <details>
 <summary>導入するバージョンの選び方</summary>
-
-ゲーム本体のバージョンが最新の場合, 当MOD[最新版の導入手順](#1bepinexの導入)に従ってください.
-
-ゲーム本体のバージョンがわからない場合, インストールされたディレクトリの構成を確認し, `GameAssembly.dll`が`Yog-Sothoth's Yard.exe`と同じ階層に存在する場合は, 当MOD[最新版の導入手順](#1bepinexの導入)に従ってください. 存在しない場合, 当MOD[v1.0.2の導入手順](#1bepinexの導入-1)に従ってください.
-
+<p>
+ゲーム本体のバージョンが最新の場合, 当MOD<a href="#1bepinexの導入">最新版の導入手順</a>に従ってください.
+</p>
+<p>
+ゲーム本体のバージョンがわからない場合, インストールされたディレクトリの構成を確認し, <code class="language-plaintext highlighter-rouge">GameAssembly.dll</code>が<code class="language-plaintext highlighter-rouge">Yog-Sothoth's Yard.exe</code>と同じ階層に存在する場合は, 当MOD<a href="#1bepinexの導入">最新版の導入手順</a>に従ってください. 存在しない場合, 当MOD<a href="#1bepinexの導入-1">v1.0.2の導入手順</a>に従ってください.
+</p>
 </details>
 
 ## MOD使用
