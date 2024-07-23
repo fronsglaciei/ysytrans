@@ -16,9 +16,9 @@ Unity汎用Moddingフレームワークの**BepInEx**のプラグインとして
 <summary>当MOD v1.0.2の動作環境</summary>
 
 <ul>
-  <li>"Yog-Sothoth's Yard - steam 2024/06/28版"</li>
-  <li>"BepInEx 5.4.23.2"</li>
-  <li>"Windows 11"</li>
+  <li>Yog-Sothoth's Yard - steam 2024/06/28版</li>
+  <li>BepInEx 5.4.23.2</li>
+  <li>Windows 11</li>
 </ul>
 
 </details>
@@ -45,7 +45,7 @@ Program Files以下など管理者権限が必要なディレクトリにイン�
 
 #### 2.当MODの導入
 
-[Releases](https://github.com/fronsglaciei/YSYMod.Translations/releases)から最新の`FG.Mods.YSYard.Translations.zip`をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.
+[Releases](https://github.com/fronsglaciei/ysytrans/releases)から最新の`FG.Mods.YSYard.Translations.zip`をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.
 
 * Yog-Sothoth's Yardインストール先(Steam)\steamapps\common\Yog-Sothoth's Yard等
   * Yog-Sothoth's Yard.exe等の公式ファイル
@@ -86,7 +86,7 @@ Program Files以下など管理者権限が必要なディレクトリにイン�
 
 <h4 id="2当modの導入">2.当MODの導入<a class="anchorjs-link " href="2当modの導入-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 
-<p><a href="https://github.com/fronsglaciei/YSYMod.Translations/releases">Releases</a>からv1.0.2の<code class="language-plaintext highlighter-rouge">FG.Mods.YSYard.Translations.zip</code>をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.</p>
+<p><a href="https://github.com/fronsglaciei/ysytrans/releases">Releases</a>からv1.0.2の<code class="language-plaintext highlighter-rouge">FG.Mods.YSYard.Translations.zip</code>をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.</p>
 
 <ul>
   <li>Yog-Sothoth’s Yardインストール先(Steam)\steamapps\common\Yog-Sothoth’s Yard等
