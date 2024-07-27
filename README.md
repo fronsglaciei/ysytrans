@@ -67,7 +67,7 @@ Program Files以下など管理者権限が必要なディレクトリにイン�
 <summary>当MOD v1.0.2の導入手順</summary>
 <h4 id="1bepinexの導入-1">1.BepInExの導入<a class="anchorjs-link " href="#1bepinexの導入-1" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 <p>
-  <a href="https://github.com/BepInEx/BepInEx/releases">BepInEx</a>のIL2CPP Windows 64bit版<code class="language-plaintext highlighter-rouge">BepInEx_win_x64_5.4.23.2.zip</code>をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.
+  <a href="https://github.com/BepInEx/BepInEx/releases">BepInEx</a>のWindows 64bit版<code class="language-plaintext highlighter-rouge">BepInEx_win_x64_5.4.23.2.zip</code>をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.
 </p>
 
 <ul>
