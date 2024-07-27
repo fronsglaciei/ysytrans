@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="python .misc/deploy.py" />
+    <Exec Command="pwsh.exe -command &quot;&amp; { .misc/deploy.ps1 } &quot;" />
   </Target>
 
 </Project>
