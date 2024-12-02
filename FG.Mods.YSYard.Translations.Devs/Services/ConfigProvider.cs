@@ -1,14 +1,12 @@
 ﻿using BepInEx.Configuration;
 
-namespace FG.Mods.YSYard.Translations.Services;
+namespace FG.Mods.YSYard.Translations.Devs.Services;
 
 public static class ConfigProvider
 {
     public static ConfigEntry<bool> NotifiesKey { get; private set; }
 
     public static ConfigEntry<bool> ShowsExportButton { get; private set; }
-
-    public static ConfigEntry<bool> ShowsReloadTranslationsButton { get; private set; }
 
     internal static void Init(ConfigFile configFile)
     {
@@ -23,11 +21,5 @@ public static class ConfigProvider
             nameof(ShowsExportButton),
             false,
             "If true, this mod shows Export-Button that exports Language assets as JSON.\nThis option is supposed to be used by a translator.");
-
-        ShowsReloadTranslationsButton = configFile.Bind(
-            "General",
-            nameof(ShowsReloadTranslationsButton),
-            false,
-            "If true, this mod shows Reload-Button that reloads translation files.\nThis option is supposed to be used by a translator.");
     }
 }

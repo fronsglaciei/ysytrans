@@ -9,9 +9,5 @@ public static class PathProvider
     internal static void Init(string rootPath)
     {
         PathDef = new LanguagePathDefs(rootPath);
-        if (PathDef.IsValid)
-        {
-            PathDef.EnsureAllCreated();
-        }
     }
 }

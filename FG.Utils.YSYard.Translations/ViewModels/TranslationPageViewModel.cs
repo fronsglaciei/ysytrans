@@ -1,4 +1,4 @@
-﻿using FG.Defs.YSYard.Translations;
+﻿using FG.Defs.YSYard.Translations.Devs;
 using FG.Utils.YSYard.Translations.Contracts.Models;
 using FG.Utils.YSYard.Translations.Contracts.Services;
 using FG.Utils.YSYard.Translations.Models;
@@ -111,7 +111,7 @@ public class TranslationPageViewModel : ComponentBase, IDisposable
     {
         this.PluginFolderPath = this.AppConfig.Value.PluginFolderPath;
 
-        this.PluginIsFound = new LanguagePathDefs(this.PluginFolderPath).IsValid;
+        this.PluginIsFound = new DevelopmentPathDefs(this.PluginFolderPath).IsValid;
 
         this.KeyNotification.KeyNotifications.CollectionChanged += KeyNotifications_CollectionChanged;
 
@@ -130,7 +130,7 @@ public class TranslationPageViewModel : ComponentBase, IDisposable
         }
 
         this.PluginFolderPath = path;
-        this.PluginIsFound = new LanguagePathDefs(path).IsValid;
+        this.PluginIsFound = new DevelopmentPathDefs(path).IsValid;
         this.LanguageRepository.SetPluginFolderPath(path);
         this.TranslationRepository.SetPluginFolderPath(path);
         this.AppConfig.Update(x =>

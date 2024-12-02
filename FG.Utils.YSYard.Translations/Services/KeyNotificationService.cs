@@ -1,4 +1,4 @@
-﻿using FG.Defs.YSYard.Translations;
+﻿using FG.Defs.YSYard.Translations.Devs;
 using FG.Utils.YSYard.Translations.Contracts.Services;
 using FG.Utils.YSYard.Translations.Helpers;
 using System.Collections.ObjectModel;

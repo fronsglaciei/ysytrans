@@ -1,6 +1,6 @@
-﻿using FG.Defs.YSYard.Translations;
+﻿using FG.Defs.YSYard.Translations.Devs;
 
-namespace FG.Mods.YSYard.Translations.Services;
+namespace FG.Mods.YSYard.Translations.Devs.Services;
 
 public static class KeyNotifier
 {

@@ -1,4 +1,5 @@
 ﻿using FG.Defs.YSYard.Translations;
+using FG.Defs.YSYard.Translations.Devs;
 using FG.Utils.YSYard.Translations.Contracts.Models;
 using FG.Utils.YSYard.Translations.Contracts.Services;
 using FG.Utils.YSYard.Translations.Models;
@@ -15,7 +16,7 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
 {
     private readonly IWritableOptions<AppConfig> _config;
 
-    private LanguagePathDefs _pathDef = null!;
+    private DevelopmentPathDefs _pathDefDev = null!;
 
     private readonly CancellationTokenSource _cts = new();
 
@@ -33,18 +34,18 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
 
     public void SetPluginFolderPath(string pluginFolderPath)
     {
-        this._pathDef = new(pluginFolderPath);
-        if (!this._pathDef.IsValid)
+        this._pathDefDev = new(pluginFolderPath);
+        if (!this._pathDefDev.IsValid)
         {
             return;
         }
-        this._pathDef.EnsureAllCreated();
+        this._pathDefDev.EnsureAllCreated();
     }
 
     public bool TryGetTranslation(KeyNotification kn, out string translation)
     {
         translation = string.Empty;
-        var path = this._pathDef.GetTranslationFilePath(kn);
+        var path = this._pathDefDev.GetTranslationFilePath(kn);
         if (File.Exists(path))
         {
             translation = File.ReadAllText(path, Encoding.UTF8);
@@ -56,7 +57,7 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
 
     public void SaveTranslation(KeyNotification kn, string translation)
     {
-        var path = this._pathDef.GetTranslationFilePath(kn);
+        var path = this._pathDefDev.GetTranslationFilePath(kn);
 
         // converts new-line codes
         var tmp = translation.Replace("\r\n", "\n");
@@ -67,7 +68,7 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
 
     public async Task<IEnumerable<KeyNotification>> SearchTranslationAsync(string pattern)
     {
-        if (string.IsNullOrEmpty(pattern) || !this._pathDef.IsValid)
+        if (string.IsNullOrEmpty(pattern) || !this._pathDefDev.IsValid)
         {
             return [];
         }
@@ -86,13 +87,13 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
         {
             return [];
         }
-        var taskLanguages = Directory.EnumerateFiles(this._pathDef.LanguagesPath).Select(x => Task.Run(() =>
+        var taskLanguages = Directory.EnumerateFiles(this._pathDefDev.LanguagesPath).Select(x => Task.Run(() =>
         {
             if (this._cts.IsCancellationRequested)
             {
                 return null;
             }
-            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            if (this._pathDefDev.TryGetKeyFromPath(x, out var key))
             {
                 var text = File.ReadAllText(x, Encoding.UTF8);
                 if (re.IsMatch(text))
@@ -114,13 +115,13 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
         }
         ret.AddRange(tmpKns.Where(x => x != null).OfType<KeyNotification>());
 
-        var taskLanguageTalks = Directory.EnumerateFiles(this._pathDef.LanguageTalksPath).Select(x => Task.Run(() =>
+        var taskLanguageTalks = Directory.EnumerateFiles(this._pathDefDev.LanguageTalksPath).Select(x => Task.Run(() =>
         {
             if (this._cts.IsCancellationRequested)
             {
                 return null;
             }
-            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            if (this._pathDefDev.TryGetKeyFromPath(x, out var key))
             {
                 var text = File.ReadAllText(x, Encoding.UTF8);
                 if (re.IsMatch(text))
@@ -146,18 +147,18 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
     public async Task<bool> SaveBackupAsync(string path)
     {
         var tmpLanguages = new ConcurrentDictionary<int, string>();
-        var taskLanguages = Directory.EnumerateFiles(this._pathDef.LanguagesPath).Select(x => Task.Run(() =>
+        var taskLanguages = Directory.EnumerateFiles(this._pathDefDev.LanguagesPath).Select(x => Task.Run(() =>
         {
-            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            if (this._pathDefDev.TryGetKeyFromPath(x, out var key))
             {
                 var text = File.ReadAllText(x, Encoding.UTF8);
                 tmpLanguages.TryAdd(key, text);
             }
         }));
         var tmpLanguageTalks = new ConcurrentDictionary<int, string>();
-        var taskLanguageTalks = Directory.EnumerateFiles(this._pathDef.LanguageTalksPath).Select(x => Task.Run(() =>
+        var taskLanguageTalks = Directory.EnumerateFiles(this._pathDefDev.LanguageTalksPath).Select(x => Task.Run(() =>
         {
-            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            if (this._pathDefDev.TryGetKeyFromPath(x, out var key))
             {
                 var text = File.ReadAllText(x, Encoding.UTF8);
                 tmpLanguageTalks.TryAdd(key, text);
@@ -194,7 +195,7 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
 
     public async Task<bool> LoadBackupAsync(string path)
     {
-        if (!this._pathDef.IsValid)
+        if (!this._pathDefDev.IsValid)
         {
             return false;
         }
@@ -221,7 +222,7 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
             {
                 return;
             }
-            var path = this._pathDef.GetTranslationFilePath(new KeyNotification
+            var path = this._pathDefDev.GetTranslationFilePath(new KeyNotification
             {
                 KeyType = LanguageKeyTypes.Language,
                 Key = x.Key,
@@ -234,7 +235,7 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
             {
                 return;
             }
-            var path = this._pathDef.GetTranslationFilePath(new KeyNotification
+            var path = this._pathDefDev.GetTranslationFilePath(new KeyNotification
             {
                 KeyType = LanguageKeyTypes.LanguageTalk,
                 Key = x.Key,
@@ -247,24 +248,24 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
 
     public async Task<bool> SerializeAsync()
     {
-        if (!this._pathDef.IsValid)
+        if (!this._pathDefDev.IsValid)
         {
             return false;
         }
 
         var tmpLanguages = new ConcurrentDictionary<int, string>();
-        var taskLanguages = Directory.EnumerateFiles(this._pathDef.LanguagesPath).Select(x => Task.Run(() =>
+        var taskLanguages = Directory.EnumerateFiles(this._pathDefDev.LanguagesPath).Select(x => Task.Run(() =>
         {
-            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            if (this._pathDefDev.TryGetKeyFromPath(x, out var key))
             {
                 var text = File.ReadAllText(x, Encoding.UTF8);
                 tmpLanguages.TryAdd(key, text);
             }
         }));
         var tmpLanguageTalks = new ConcurrentDictionary<int, string>();
-        var taskLanguageTalks = Directory.EnumerateFiles(this._pathDef.LanguageTalksPath).Select(x => Task.Run(() =>
+        var taskLanguageTalks = Directory.EnumerateFiles(this._pathDefDev.LanguageTalksPath).Select(x => Task.Run(() =>
         {
-            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            if (this._pathDefDev.TryGetKeyFromPath(x, out var key))
             {
                 var text = File.ReadAllText(x, Encoding.UTF8);
                 tmpLanguageTalks.TryAdd(key, text);
@@ -277,21 +278,22 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
             Dictionary = tmpLanguages.ToDictionary()
         };
         var json0 = JsonSerializer.Serialize(tl, _jsonOpts);
-        File.WriteAllText(this._pathDef.TranslatedLanguagesSerializedPath, json0, Encoding.UTF8);
+        var pathDefMod = new LanguagePathDefs(this._pathDefDev.PluginRootPath);
+        File.WriteAllText(pathDefMod.TranslatedLanguagesSerializedPath, json0, Encoding.UTF8);
 
         var tlt = new TranslatedLanguageTalks
         {
             Dictionary = tmpLanguageTalks.ToDictionary()
         };
         var json1 = JsonSerializer.Serialize(tlt, _jsonOpts);
-        File.WriteAllText(this._pathDef.TranslatedLanguageTalksSerializedPath, json1, Encoding.UTF8);
+        File.WriteAllText(pathDefMod.TranslatedLanguageTalksSerializedPath, json1, Encoding.UTF8);
 
         return true;
     }
 
     public async Task ReportDiffAsync(string oldPluginFolderPath)
     {
-        if (this._pathDef == null)
+        if (this._pathDefDev == null)
         {
             return;
         }
@@ -300,7 +302,7 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
             return;
         }
 
-        var oldPathDef = new LanguagePathDefs(oldPluginFolderPath);
+        var oldPathDef = new DevelopmentPathDefs(oldPluginFolderPath);
         if (!oldPathDef.IsValid)
         {
             return;
@@ -327,18 +329,18 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
         await Task.WhenAll(new[] { taskOldLanguages, taskOldLanguageTalks }.SelectMany(x => x)).ConfigureAwait(false);
 
         var curLanguages = new ConcurrentDictionary<int, string>();
-        var taskCurLanguages = Directory.EnumerateFiles(this._pathDef.LanguagesPath).Select(x => Task.Run(() =>
+        var taskCurLanguages = Directory.EnumerateFiles(this._pathDefDev.LanguagesPath).Select(x => Task.Run(() =>
         {
-            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            if (this._pathDefDev.TryGetKeyFromPath(x, out var key))
             {
                 var text = File.ReadAllText(x, Encoding.UTF8);
                 curLanguages.TryAdd(key, text);
             }
         }));
         var curLanguageTalks = new ConcurrentDictionary<int, string>();
-        var taskCurLanguageTalks = Directory.EnumerateFiles(this._pathDef.LanguageTalksPath).Select(x => Task.Run(() =>
+        var taskCurLanguageTalks = Directory.EnumerateFiles(this._pathDefDev.LanguageTalksPath).Select(x => Task.Run(() =>
         {
-            if (this._pathDef.TryGetKeyFromPath(x, out var key))
+            if (this._pathDefDev.TryGetKeyFromPath(x, out var key))
             {
                 var text = File.ReadAllText(x, Encoding.UTF8);
                 curLanguageTalks.TryAdd(key, text);
@@ -419,7 +421,7 @@ public class TranslationRepositoryService : ITranslationRepositoryService, IDisp
         }
         sb.AppendLine();
 
-        var reportPath = Path.Combine(this._pathDef.PluginRootPath, "diff_Translations.txt");
+        var reportPath = Path.Combine(this._pathDefDev.PluginRootPath, "diff_Translations.txt");
         File.WriteAllText(reportPath, sb.ToString(), Encoding.UTF8);
     }
 

@@ -1,4 +1,4 @@
-﻿using FG.Defs.YSYard.Translations;
+﻿using FG.Defs.YSYard.Translations.Devs;
 
 namespace FG.Utils.YSYard.Translations.Contracts.Services;
 

@@ -9,10 +9,6 @@ namespace FG.Mods.YSYard.Translations.Services
         internal static void Init(string rootPath)
         {
             PathDef = new LanguagePathDefs(rootPath);
-            if (PathDef.IsValid)
-            {
-                PathDef.EnsureAllCreated();
-            }
         }
     }
 }

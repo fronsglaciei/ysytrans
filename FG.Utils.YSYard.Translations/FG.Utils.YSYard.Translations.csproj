@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFramework>net8.0-windows7.0</TargetFramework>
+        <TargetFramework>net9.0-windows7.0</TargetFramework>
         <OutputType>WinExe</OutputType>
         <UseWindowsForms>true</UseWindowsForms>
 
@@ -23,12 +23,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="8.*" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.*" />
-        <PackageReference Include="MudBlazor" Version="7.3.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="9.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+        <PackageReference Include="MudBlazor" Version="7.15.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\FG.Defs.YSYard.Translations.Devs\FG.Defs.YSYard.Translations.Devs.csproj" />
       <ProjectReference Include="..\FG.Defs.YSYard.Translations\FG.Defs.YSYard.Translations.csproj" />
     </ItemGroup>
 

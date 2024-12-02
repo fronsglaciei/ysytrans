@@ -1,4 +1,4 @@
-﻿using FG.Defs.YSYard.Translations;
+﻿using FG.Defs.YSYard.Translations.Devs;
 using Plot;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using SysTask = System.Threading.Tasks;
 
-namespace FG.Mods.YSYard.Translations.Services;
+namespace FG.Mods.YSYard.Translations.Devs.Services;
 
 public static class LanguageResourceExporter
 {

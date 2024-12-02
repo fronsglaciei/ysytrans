@@ -10,11 +10,6 @@ namespace FG.Mods.YSYard.Translations.Patches
     {
         public static void Postfix(ref LanguageTalk __result, int key)
         {
-            KeyNotifier.Notify(new KeyNotification
-            {
-                KeyType = LanguageKeyTypes.LanguageTalk,
-                Key = key
-            });
             if (__result != null && TranslationProvider.TryGetLanguageTalkTranslation(key, out var translation))
             {
                 __result.LanguageJP = translation;

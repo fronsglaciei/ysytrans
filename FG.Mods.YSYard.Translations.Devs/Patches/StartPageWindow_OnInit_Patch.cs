@@ -1,12 +1,12 @@
 ﻿using DG.Tweening;
-using FG.Mods.YSYard.Translations.Services;
+using FG.Mods.YSYard.Translations.Devs.Services;
 using Foundation.UI;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace FG.Mods.YSYard.Translations.Patches;
+namespace FG.Mods.YSYard.Translations.Devs.Patches;
 
 [HarmonyPatch(typeof(StartPageWindow), nameof(StartPageWindow.OnInit))]
 public static class StartPageWindow_OnInit_Patch
@@ -18,10 +18,6 @@ public static class StartPageWindow_OnInit_Patch
     private const string BUTTON_NAME_EXPORT_STORIES = "ExportStories";
 
     private const string BUTTON_TIPS_EXPORT_STORIES = "Export Stories";
-
-    private const string BUTTON_NAME_RELOAD_TRANSLATIONS = "ReloadTranslations";
-
-    private const string BUTTON_TIPS_RELOAD_TRANSLATIONS = "Reload Translations";
 
     public static void Postfix(StartPageWindow __instance)
     {
@@ -38,15 +34,6 @@ public static class StartPageWindow_OnInit_Patch
                 BUTTON_NAME_EXPORT_STORIES,
                 BUTTON_TIPS_EXPORT_STORIES,
                 LanguageResourceExporter.ExportStoryPlots);
-        }
-
-        if (ConfigProvider.ShowsReloadTranslationsButton.Value)
-        {
-            CloneButton(
-                __instance,
-                BUTTON_NAME_RELOAD_TRANSLATIONS,
-                BUTTON_TIPS_RELOAD_TRANSLATIONS,
-                TranslationProvider.LoadTranslations);
         }
     }
 

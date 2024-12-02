@@ -1,12 +1,12 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
-using FG.Mods.YSYard.Translations.Services;
+using FG.Mods.YSYard.Translations.Devs.Services;
 using HarmonyLib;
 using System.IO;
 using System.Reflection;
 
-namespace FG.Mods.YSYard.Translations;
+namespace FG.Mods.YSYard.Translations.Devs;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BasePlugin
@@ -17,11 +17,22 @@ public class Plugin : BasePlugin
     {
         Log = base.Log;
 
+        ConfigProvider.Init(Config);
+
         var assembly = Assembly.GetExecutingAssembly();
         PathProvider.Init(Path.GetDirectoryName(assembly.Location));
 
-        TranslationProvider.LoadTranslations();
+        if (ConfigProvider.NotifiesKey.Value)
+        {
+            KeyNotifier.StartServer();
+        }
 
         Harmony.CreateAndPatchAll(assembly);
+    }
+
+    public override bool Unload()
+    {
+        KeyNotifier.StopServer();
+        return base.Unload();
     }
 }

@@ -29,12 +29,6 @@ public partial class MainForm : Form
 
         InitializeComponent();
 
-        this.MainWebView.BlazorWebViewInitialized += (s, e) =>
-        {
-            e.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
-            e.WebView.CoreWebView2.ContextMenuRequested += this.CoreWebView2_ContextMenuRequested;
-        };
-
         NativeMethods.UseImmersiveDarkMode(this.Handle, true);
 
         this.MainWebView.HostPage = "wwwroot/index.html";
@@ -42,36 +36,6 @@ public partial class MainForm : Form
         this.MainWebView.StartPath = "/";
 
         this.MainWebView.RootComponents.Add<Main>("#app");
-    }
-
-    private void CoreWebView2_ContextMenuRequested(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2ContextMenuRequestedEventArgs e)
-    {
-        // https://github.com/dotnet/maui/issues/11398
-
-        if (e.ContextMenuTarget.IsEditable)
-        {
-            var itemNamesToRemove = new[] { "share", "webSelect", "webCapture", "inspectElement" };
-            var menuIndexesToRemove =
-                e.MenuItems
-                    .Select((m, i) => (m, i))
-                    .Where(m => itemNamesToRemove.Contains(m.m.Name))
-                    .Select(m => m.i)
-                    .Reverse();
-
-            foreach (var menuIndexToRemove in menuIndexesToRemove)
-            {
-                e.MenuItems.RemoveAt(menuIndexToRemove);
-            }
-
-            while (e.MenuItems.Last().Kind == Microsoft.Web.WebView2.Core.CoreWebView2ContextMenuItemKind.Separator)
-            {
-                e.MenuItems.RemoveAt(e.MenuItems.Count - 1);
-            }
-        }
-        else
-        {
-            e.Handled = true;
-        }
     }
 
     private async Task<string> PickOpenFileAsync(FilePickerOptions? opts)

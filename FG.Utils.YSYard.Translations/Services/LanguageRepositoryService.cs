@@ -1,4 +1,4 @@
-﻿using FG.Defs.YSYard.Translations;
+﻿using FG.Defs.YSYard.Translations.Devs;
 using FG.Utils.YSYard.Translations.Contracts.Models;
 using FG.Utils.YSYard.Translations.Contracts.Services;
 using FG.Utils.YSYard.Translations.Helpers;
@@ -17,7 +17,7 @@ public class LanguageRepositoryService : ILanguageRepositoryService, IDisposable
 
 	private readonly ReaderWriterLockSlim _lock = new();
 
-	private LanguagePathDefs _pathDef = null!;
+	private DevelopmentPathDefs _pathDef = null!;
 
 	private readonly List<int> _languageIndices = [];
 
@@ -315,7 +315,7 @@ public class LanguageRepositoryService : ILanguageRepositoryService, IDisposable
             return;
         }
 
-        var oldPathDef = new LanguagePathDefs(oldPluginFolderPath);
+        var oldPathDef = new DevelopmentPathDefs(oldPluginFolderPath);
         if (!oldPathDef.IsValid)
         {
             return;

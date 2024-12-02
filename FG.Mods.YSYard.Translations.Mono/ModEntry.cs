@@ -14,7 +14,7 @@ namespace FG.Mods.YSYard.Translations
 
         public const string PLUGIN_NAME = "Unofficial Japanese Translation Mod";
 
-        public const string PLUGIN_VERSION = "1.0.2";
+        public const string PLUGIN_VERSION = "1.0.3";
 
         public static ManualLogSource RootLogger
         {
@@ -25,24 +25,12 @@ namespace FG.Mods.YSYard.Translations
         {
             ModEntry.RootLogger = this.Logger;
 
-            ConfigProvider.Init(this.Config);
-
             var assembly = Assembly.GetExecutingAssembly();
             PathProvider.Init(Path.GetDirectoryName(assembly.Location));
-
-            if (ConfigProvider.NotifiesKey.Value)
-            {
-                KeyNotifier.StartServer();
-            }
 
             TranslationProvider.LoadTranslations();
 
             Harmony.CreateAndPatchAll(assembly);
-        }
-
-        private void OnDestroy()
-        {
-            KeyNotifier.StopServer();
         }
     }
 }

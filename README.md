@@ -8,8 +8,8 @@ Unity汎用Moddingフレームワークの**BepInEx**のプラグインとして
 
 当MODの最新版は以下の環境で作成および動作確認しています.
 
-* Yog-Sothoth's Yard - steam v1.0.11
-* BepInEx IL2CPP 6.0.0 build 692
+* Yog-Sothoth's Yard - steam v1.0.12
+* BepInEx IL2CPP 6.0.0-pre.2
 * Windows 11
 
 <details>
@@ -29,7 +29,7 @@ Unity汎用Moddingフレームワークの**BepInEx**のプラグインとして
 
 #### 1.BepInExの導入
 
-[BepInEx](https://builds.bepinex.dev/projects/bepinex_be)のIL2CPP Windows 64bit版`BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.692+851521c.zip`をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.
+[BepInEx](https://github.com/BepInEx/BepInEx/releases)のIL2CPP Windows 64bit版`BepInEx-Unity.IL2CPP-win-x64-6.0.0-pre.2.zip`をダウンロードして展開の後, 以下のようなディレクトリ階層に配置してください.
 
 * Yog-Sothoth's Yardインストール先(Steam)\steamapps\common\Yog-Sothoth's Yard等
   * Yog-Sothoth's Yard.exe等の公式ファイル

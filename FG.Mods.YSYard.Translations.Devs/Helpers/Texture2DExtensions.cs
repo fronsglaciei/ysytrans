@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FG.Mods.YSYard.Translations.Helpers;
+namespace FG.Mods.YSYard.Translations.Devs.Helpers;
 
 public static class Texture2DExtensions
 {

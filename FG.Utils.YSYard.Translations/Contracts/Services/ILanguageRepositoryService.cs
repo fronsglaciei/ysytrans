@@ -1,4 +1,4 @@
-﻿using FG.Defs.YSYard.Translations;
+﻿using FG.Defs.YSYard.Translations.Devs;
 using FG.Utils.YSYard.Translations.Models;
 using System.Diagnostics.CodeAnalysis;
 
