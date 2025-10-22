@@ -4,46 +4,28 @@ namespace FG.Defs.YSYard.Translations.Devs
 {
     public class DevelopmentPathDefs
     {
-        private const string LANGUAGES_FOLDER = "Languages";
+        private const string STAGING_JSON = "staging.json";
 
-        private const string LANGUAGE_TALKS_FOLDER = "LanguageTalks";
+        private const string CACHE_EXT = ".tmp";
 
-        private const string EXPORTED_FOLDER = "Exported";
-
-        private const string STORIES_FOLDER = "Stories";
-
-        private const int LANGUAGES_MAX_DIGITS = 8;
-
-        private const int LANGUAGE_TALKS_MAX_DIGITS = 7;
-
-        private const int STORIES_MAX_DIGITS = 7;
+        private const string STORY_JSON = "story.json";
 
         public string PluginRootPath
         {
             get;
         } = "nowhere";
 
-        public string LanguagesPath
+        public string StagingJsonPath
         {
             get;
         } = "nowhere";
 
-        public string LanguagesExportedPath
+        public string StagingCachePath
         {
             get;
         } = "nowhere";
 
-        public string LanguageTalksPath
-        {
-            get;
-        } = "nowhere";
-
-        public string LanguageTalksExportedPath
-        {
-            get;
-        } = "nowhere";
-
-        public string StoriesPath
+        public string StoryPath
         {
             get;
         } = "nowhere";
@@ -68,11 +50,9 @@ namespace FG.Defs.YSYard.Translations.Devs
         public DevelopmentPathDefs(string rootPath)
         {
             this.PluginRootPath = rootPath;
-            this.LanguagesPath = Path.Combine(rootPath, LANGUAGES_FOLDER);
-            this.LanguagesExportedPath = Path.Combine(this.LanguagesPath, EXPORTED_FOLDER);
-            this.LanguageTalksPath = Path.Combine(rootPath, LANGUAGE_TALKS_FOLDER);
-            this.LanguageTalksExportedPath = Path.Combine(this.LanguageTalksPath, EXPORTED_FOLDER);
-            this.StoriesPath = Path.Combine(rootPath, STORIES_FOLDER);
+            this.StagingJsonPath = Path.Combine(rootPath, STAGING_JSON);
+            this.StagingCachePath = Path.Combine(rootPath, $"{STAGING_JSON}{CACHE_EXT}");
+            this.StoryPath = Path.Combine(rootPath, STORY_JSON);
         }
 
         public void EnsureAllCreated()
@@ -81,69 +61,6 @@ namespace FG.Defs.YSYard.Translations.Devs
             {
                 throw new DirectoryNotFoundException($"{nameof(PluginRootPath)} does not exist : {this.PluginRootPath}");
             }
-
-            if (!Directory.Exists(this.LanguagesPath))
-            {
-                Directory.CreateDirectory(this.LanguagesPath);
-            }
-            if (!Directory.Exists(this.LanguagesExportedPath))
-            {
-                Directory.CreateDirectory(this.LanguagesExportedPath);
-            }
-            if (!Directory.Exists(this.LanguageTalksPath))
-            {
-                Directory.CreateDirectory(this.LanguageTalksPath);
-            }
-            if (!Directory.Exists(this.LanguageTalksExportedPath))
-            {
-                Directory.CreateDirectory(this.LanguageTalksExportedPath);
-            }
-            if (!Directory.Exists(this.StoriesPath))
-            {
-                Directory.CreateDirectory(this.StoriesPath);
-            }
-        }
-
-        public string GetTranslationFilePath(KeyNotification kn)
-        {
-            if (kn.KeyType == LanguageKeyTypes.Language)
-            {
-                var filename = kn.Key.ToString().PadLeft(LANGUAGES_MAX_DIGITS, '0');
-                return Path.Combine(this.LanguagesPath, $"{filename}.txt");
-            }
-            else if (kn.KeyType == LanguageKeyTypes.LanguageTalk)
-            {
-                var filename = kn.Key.ToString().PadLeft(LANGUAGE_TALKS_MAX_DIGITS, '0');
-                return Path.Combine(this.LanguageTalksPath, $"{filename}.txt");
-            }
-            return string.Empty;
-        }
-
-        public string GetExportedFilePath(KeyNotification kn)
-        {
-            if (kn.KeyType == LanguageKeyTypes.Language)
-            {
-                var filename = kn.Key.ToString().PadLeft(LANGUAGES_MAX_DIGITS, '0');
-                return Path.Combine(this.LanguagesExportedPath, $"{filename}.json");
-            }
-            else if (kn.KeyType == LanguageKeyTypes.LanguageTalk)
-            {
-                var filename = kn.Key.ToString().PadLeft(LANGUAGE_TALKS_MAX_DIGITS, '0');
-                return Path.Combine(this.LanguageTalksExportedPath, $"{filename}.json");
-            }
-            return string.Empty;
-        }
-
-        public string GetStoryFilePath(int id)
-        {
-            var filename = id.ToString().PadLeft(STORIES_MAX_DIGITS, '0');
-            return Path.Combine(this.StoriesPath, $"{filename}.json");
-        }
-
-        public bool TryGetKeyFromPath(string path, out int key)
-        {
-            var filename = Path.GetFileNameWithoutExtension(path);
-            return int.TryParse(filename, out key);
         }
     }
 }

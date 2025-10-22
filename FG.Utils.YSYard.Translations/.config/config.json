@@ -1,5 +1,7 @@
 {
-  "PluginFolderPath": "click to pick folder",
+  "PluginMainDirPath": "",
+  "PluginDevDirPath": "",
+  "TemporarySaveInterval": 10000,
   "IgnoreListPath": ".config/ignore.json",
   "StaticWordTranslations": {
     "エキストラ": "エクストラ",

@@ -1,68 +1,75 @@
 ﻿using FG.Defs.YSYard.Translations.Devs;
-using FG.Utils.YSYard.Translations.Contracts.Services;
 using FG.Utils.YSYard.Translations.Helpers;
-using System.Collections.ObjectModel;
 
 namespace FG.Utils.YSYard.Translations.Services;
 
-public class KeyNotificationService : IKeyNotificationService, IObserver<int>, IDisposable
+public class KeyNotificationService : IObserver<int>, IDisposable
 {
-	private readonly KeyNotificationClient _client = new();
+    private readonly KeyNotificationClient<LanguageKey> _client = new();
 
-	private readonly IDisposable _unsubscriber;
+    private readonly IDisposable _unsubscriber;
 
-	private readonly ReaderWriterLockSlim _lock = new();
+    private readonly ReaderWriterLockSlim _lock = new();
 
-	private readonly HashSet<KeyNotification> _cache = [];
+    private readonly HashSet<LanguageKey> _cache = [];
 
-	private readonly ObservableCollectionEx<KeyNotification> _notifications = [];
-	public ObservableCollection<KeyNotification> KeyNotifications => this._notifications;
+    private readonly HashSet<Action<List<LanguageKey>>> _callbacks = [];
 
-	public KeyNotificationService()
-	{
-		this._unsubscriber = this._client.Subscribe(this);
-	}
-
-    public void ForceNotify(IEnumerable<KeyNotification> kns)
+    public KeyNotificationService()
     {
-		if (!kns.Any())
-		{
-			return;
-		}
+        this._unsubscriber = this._client.Subscribe(this);
+    }
+
+    public void RegisterCallback(Action<List<LanguageKey>> callback)
+    {
+        this._callbacks.Add(callback);
+    }
+
+    public void ForceNotify(List<LanguageKey> kns)
+    {
+        if (kns.Count < 1)
+        {
+            return;
+        }
 
         foreach (var kn in kns)
         {
-			if (this._cache.TryGetValue(kn, out var tmpKn))
-			{
+            if (this._cache.TryGetValue(kn, out var tmpKn))
+            {
                 using var wl = new WriteLock(this._lock);
-				tmpKn.TimeStamp = kn.TimeStamp;
+                tmpKn.TimeStamp = kn.TimeStamp;
             }
-			else
-			{
+            else
+            {
                 using var wl = new WriteLock(this._lock);
                 this._cache.Add(kn);
             }
         }
-		this.UpdateNotifications();
+        this.UpdateNotifications();
     }
 
-    public void Remove(KeyNotification kn)
-	{
-		this._cache.Remove(kn);
-		this.UpdateNotifications();
+    public void ForceNotifyAll() => this.UpdateNotifications();
+
+    public void Remove(LanguageKey kn)
+    {
+        this._cache.Remove(kn);
+        this.UpdateNotifications();
     }
 
-	public void ClearAll()
-	{
-		this._cache.Clear();
-		this.UpdateNotifications();
-	}
+    public void ClearAll()
+    {
+        this._cache.Clear();
+        this.UpdateNotifications();
+    }
 
-	private void UpdateNotifications()
-	{
+    private void UpdateNotifications()
+    {
         var tmp = this._cache.ToList();
         tmp.Sort((a, b) => a.TimeStamp.CompareTo(b.TimeStamp));
-        this._notifications.Overwrite(tmp);
+        foreach (var callback in this._callbacks)
+        {
+            callback(tmp);
+        }
     }
 
     public void OnNext(int _)
@@ -78,14 +85,13 @@ public class KeyNotificationService : IKeyNotificationService, IObserver<int>, I
 
     public void OnCompleted() { }
 
-    public void OnError(Exception error) { }
+    public void OnError(Exception _) { }
 
     public void Dispose()
-	{
-		this._unsubscriber.Dispose();
-		this._client.Dispose();
-		this._notifications.Dispose();
-		this._lock.Dispose();
-		GC.SuppressFinalize(this);
-	}
+    {
+        this._unsubscriber.Dispose();
+        this._client.Dispose();
+        this._lock.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }

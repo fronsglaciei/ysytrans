@@ -2,9 +2,22 @@
 
 public class AppConfig
 {
-	public string PluginFolderPath { get; set; } = string.Empty;
+    public string PluginMainDirPath
+    {
+        get; set;
+    } = string.Empty;
 
-	public string IgnoreListPath { get; set; } = ".config/ignore.json";
+    public string PluginDevDirPath
+    {
+        get; set;
+    } = string.Empty;
+
+    public int TemporarySaveInterval
+    {
+        get; set;
+    } = 10000;
+
+    public string IgnoreListPath { get; set; } = ".config/ignore.json";
 
 	public Dictionary<string, string> StaticWordTranslations { get; set; } = [];
 

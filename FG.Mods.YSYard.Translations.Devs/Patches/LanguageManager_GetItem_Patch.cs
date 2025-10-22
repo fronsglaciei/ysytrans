@@ -10,10 +10,11 @@ public static class LanguageManager_GetItem_Patch
 {
     public static void Postfix(ref Language __result, int key)
     {
-        KeyNotifier.Notify(new KeyNotification
+        KeyNotifier.Notify(new LanguageKey
         {
             KeyType = LanguageKeyTypes.Language,
-            Key = key
+            Key = key,
+            TimeStamp = System.DateTime.Now,
         });
     }
 }

@@ -1,522 +1,600 @@
-﻿using FG.Defs.YSYard.Translations.Devs;
+﻿using FG.Defs.YSYard.Translations;
+using FG.Defs.YSYard.Translations.Devs;
 using FG.Utils.YSYard.Translations.Contracts.Models;
-using FG.Utils.YSYard.Translations.Contracts.Services;
+using FG.Utils.YSYard.Translations.Enums;
 using FG.Utils.YSYard.Translations.Models;
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using System.Collections.Concurrent;
+using FG.Utils.YSYard.Translations.Services;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace FG.Utils.YSYard.Translations.ViewModels;
 
-public class TranslationPageViewModel : ComponentBase, IDisposable
+public class TranslationPageViewModel(
+    IWritableOptions<AppConfig> appConfig,
+    CustomDialogService customDialog,
+    SharedSnackbarService snackbar,
+    KeyNotificationService keyNotification,
+    TranslationStoreService tlStore,
+    TranslationApiService translationApi,
+    IgnoreListService ignoreList,
+    StoryStoreService storyStore)
+    : ViewModelBase, IDisposable
 {
-    [Inject]
-    protected IWritableOptions<AppConfig> AppConfig { get; set; } = null!;
-
-    [Inject]
-    protected ICustomDialogService CustomDialog { get; set; } = null!;
-
-    [Inject]
-    protected ISnackbar Snackbar { get; set; } = null!;
-
-    [Inject]
-    protected IKeyNotificationService KeyNotification { get; set; } = null!;
-
-    [Inject]
-    protected ILanguageRepositoryService LanguageRepository { get; set; } = null!;
-
-    [Inject]
-    protected ITranslationRepositoryService TranslationRepository { get; set; } = null!;
-
-    [Inject]
-    protected IStoryRepositoryService StoryRepository { get; set; } = null!;
-
-    [Inject]
-    protected ITranslationApiService TranslationApi { get; set; } = null!;
-
-    [Inject]
-    protected IIgnoreListService IgnoreList { get; set; } = null!;
-
-    protected string PluginFolderPath { get; set; } = "クリックして選択";
-
-    protected bool PluginIsFound { get; set; } = false;
-
-    private LanguageKeyTypes _selectedNotificationFilter;
-    protected LanguageKeyTypes SelectedNotificationFilter
+    public string PluginMainDirPath
     {
-        get => this._selectedNotificationFilter;
+        get; set;
+    } = string.IsNullOrEmpty(appConfig.Value.PluginMainDirPath)
+        ? "クリックして選択" : appConfig.Value.PluginMainDirPath;
+
+    public string PluginDevDirPath
+    {
+        get; set;
+    } = string.IsNullOrEmpty(appConfig.Value.PluginDevDirPath)
+        ? "クリックして選択" : appConfig.Value.PluginDevDirPath;
+
+    public bool PluginIsFound
+    {
+        get; set;
+    }
+
+    private LanguageKeyTypes? _filterType;
+    public LanguageKeyTypes? FilterType
+    {
+        get => this._filterType;
         set
         {
-            var isChanged = this._selectedNotificationFilter != value;
-            this._selectedNotificationFilter = value;
-            if (isChanged)
+            var changed = this._filterType != value;
+            this._filterType = value;
+            if (changed)
             {
-                this.UpdateNotifiedLanguages();
+                keyNotification.ForceNotifyAll();
             }
         }
     }
 
-    private bool _isFilterTranslated;
-    protected bool IsFilterTranslated
+    private bool _filterTranslated;
+    public bool FilterTranslated
     {
-        get => this._isFilterTranslated;
+        get => this._filterTranslated;
         set
         {
-            var isChanged = this._isFilterTranslated != value;
-            this._isFilterTranslated = value;
-            if (isChanged)
+            var changed = this._filterTranslated != value;
+            this._filterTranslated = value;
+            if (changed)
             {
-                this.UpdateNotifiedLanguages();
+                keyNotification.ForceNotifyAll();
             }
         }
     }
 
-    private bool _isFilterIgnored;
-    protected bool IsFilterIgnored
+    private bool _filterIgnored;
+    public bool FilterIgnored
     {
-        get => this._isFilterIgnored;
+        get => this._filterIgnored;
         set
         {
-            var isChanged = this._isFilterIgnored != value;
-            this._isFilterIgnored = value;
-            if (isChanged)
+            var changed = this._filterIgnored != value;
+            this._filterIgnored = value;
+            if (changed)
             {
-                this.UpdateNotifiedLanguages();
+                keyNotification.ForceNotifyAll();
             }
         }
     }
 
-    protected string SpeakerName { get; set; } = string.Empty;
-
-    protected bool IsTranslationApiUsed { get; set; } = true;
-
-    protected ConcurrentStack<LanguageContainerViewModel> NotifiedLanguages { get; } = new();
-
-    protected TranslationWorkViewModel SelectedTranslationWork { get; set; } = new(LanguageContainer.Empty, string.Empty, _ => { });
-
-    protected string ApiTranslatedString { get; set; } = string.Empty;
-
-    protected KeyNotification SelectedTranslationKeyNotification { get; set; } = new();
-
-    protected string LanguageSearchPattern { get; set; } = string.Empty;
-
-    protected string TranslationSearchPattern { get; set; } = string.Empty;
-
-    private StoryContainer? _selectedStory;
-    protected int SelectedStoryId { get; set; }
-
-    protected int SelectedStoryIndex { get; set; }
-
-    protected override void OnInitialized()
+    public List<StagingLanguageContainerViewModel> NotifiedLanguages
     {
-        this.PluginFolderPath = this.AppConfig.Value.PluginFolderPath;
+        get;
+    } = [];
 
-        this.PluginIsFound = new DevelopmentPathDefs(this.PluginFolderPath).IsValid;
-
-        this.KeyNotification.KeyNotifications.CollectionChanged += KeyNotifications_CollectionChanged;
-
-        base.OnInitialized();
+    public StagingLanguageContainerViewModel? SelectedSLC
+    {
+        get; set;
     }
 
-    private void KeyNotifications_CollectionChanged(object? _, System.Collections.Specialized.NotifyCollectionChangedEventArgs __)
-        => this.UpdateNotifiedLanguages();
-
-    protected void SetPluginFolder() => this.InvokeAsync(async () =>
+    public string SpeakerName
     {
-        var path = await this.CustomDialog.OpenFolderAsync();
+        get; set;
+    } = string.Empty;
+
+    public string CurrentUserTranslation
+    {
+        get; set;
+    } = string.Empty;
+
+    public string CurrentOriginal
+    {
+        get; set;
+    } = string.Empty;
+
+    public string CurrentEnglish
+    {
+        get; set;
+    } = string.Empty;
+
+    public string CurrentPlaceholder
+    {
+        get; set;
+    } = string.Empty;
+
+    public string CurrentApiPretranslated
+    {
+        get; set;
+    } = string.Empty;
+
+    public bool UseTranslationApi
+    {
+        get; set;
+    }
+
+    public string ApiTranslatedString
+    {
+        get; set;
+    } = string.Empty;
+
+    private LanguageKeyTypes? _selectedType;
+    public LanguageKeyTypes? SelectedType
+    {
+        get => this._selectedType;
+        set
+        {
+            var changed = this._selectedType != value;
+            this._selectedType = value;
+            if (changed)
+            {
+                this.SelectContainerByKeyType();
+            }
+        }
+    }
+
+    public int? SelectedKey
+    {
+        get; set;
+    }
+
+    public SearchRanges SelectedSearchRange
+    {
+        get; set;
+    }
+
+    public string TextSearchPatternString
+    {
+        get; set;
+    } = string.Empty;
+
+    public string? SelectedStory
+    {
+        get; set;
+    }
+
+    public int? SelectedStorySentenceKey
+    {
+        get; set;
+    }
+
+    public bool UsePlaceholderMode
+    {
+        get; set;
+    }
+
+    public bool UseSrcAsComparisonBase
+    {
+        get; set;
+    }
+
+    protected override void OnPageEnterInternal()
+    {
+        this.PluginIsFound =
+            new LanguagePathDefs(this.PluginMainDirPath).IsValid
+            && new DevelopmentPathDefs(this.PluginDevDirPath).IsValid;
+        keyNotification.RegisterCallback(this.OnKeyNotified);
+    }
+
+    public void SetPluginMainDir() => this.InvokeAsync(async () =>
+    {
+        var path = await customDialog.OpenFolderAsync();
         if (string.IsNullOrEmpty(path))
         {
             return;
         }
 
-        this.PluginFolderPath = path;
-        this.PluginIsFound = new DevelopmentPathDefs(path).IsValid;
-        this.LanguageRepository.SetPluginFolderPath(path);
-        this.TranslationRepository.SetPluginFolderPath(path);
-        this.AppConfig.Update(x =>
+        this.PluginMainDirPath = path;
+        this.PluginIsFound =
+            new LanguagePathDefs(this.PluginMainDirPath).IsValid
+            && new DevelopmentPathDefs(this.PluginDevDirPath).IsValid;
+        tlStore.SetOutputDir(this.PluginMainDirPath);
+        appConfig.Update(x =>
         {
-            x.PluginFolderPath = this.PluginFolderPath;
+            x.PluginMainDirPath = this.PluginMainDirPath;
         });
-        this.StateHasChanged();
     });
 
-    protected void ClearNotifiedLanguages()
+    public void SetPluginDevDir() => this.InvokeAsync(async () =>
     {
-        this.KeyNotification.ClearAll();
-        this.StateHasChanged();
+        var path = await customDialog.OpenFolderAsync();
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
+
+        this.PluginDevDirPath = path;
+        this.PluginIsFound =
+            new LanguagePathDefs(this.PluginMainDirPath).IsValid
+            && new DevelopmentPathDefs(this.PluginDevDirPath).IsValid;
+        tlStore.SetStagingDir(this.PluginDevDirPath);
+        appConfig.Update(x =>
+        {
+            x.PluginDevDirPath = this.PluginDevDirPath;
+        });
+    });
+
+    public void ClearNotifiedLanguages()
+    {
+        keyNotification.ClearAll();
     }
 
-    protected void SetTranslationWorkBySelectedKey()
+    public void SelectLanguageContainer(StagingLanguageContainerViewModel vm)
     {
-        if (this.LanguageRepository.TryGetContainer(this.SelectedTranslationKeyNotification, out var lc))
+        this.SelectedSLC = vm;
+        this.CurrentOriginal = vm.Raw.Original;
+        this.CurrentEnglish = vm.Raw.English;
+        this.CurrentPlaceholder = vm.Raw.Placeholder;
+        this.CurrentApiPretranslated = vm.Raw.ApiTranslated;
+        this.CurrentUserTranslation = vm.Raw.Japanese;
+        this._selectedType = vm.NotifiedKey.KeyType;
+        this.SelectedKey = vm.NotifiedKey.Key;
+        if (this.UseTranslationApi && !string.IsNullOrEmpty(this.CurrentOriginal))
         {
-            this.UpdateSelectedTranslationWork(lc);
+            this.InvokeAsync(async () =>
+            {
+                this.ApiTranslatedString = await translationApi.TranslateAsync(this.CurrentOriginal);
+            });
+        }
+    }
+
+    public void ToggleIgnoreState(StagingLanguageContainerViewModel vm)
+    {
+        if (vm.IsIgnored)
+        {
+            ignoreList.Remove(vm.NotifiedKey);
+            vm.IsIgnored = false;
         }
         else
         {
-            this.SelectedTranslationWork = new(LanguageContainer.Empty, string.Empty, _ => { });
+            ignoreList.Add(vm.NotifiedKey);
+            vm.IsIgnored = true;
+        }
+        if (this.FilterIgnored)
+        {
+            keyNotification.ForceNotifyAll();
         }
     }
 
-    protected void SetPreviousTranslationWork()
+    public void RemoveNotification(StagingLanguageContainerViewModel vm)
+        => keyNotification.Remove(vm.NotifiedKey);
+
+    public void OnKeyDownInUserTranslation(KeyboardEventArgs e)
     {
-        if (this.SelectedTranslationWork.KeyType == LanguageKeyTypes.Undefined)
+        if (e.CtrlKey && e.Key == "s")
         {
-            return;
-        }
-
-        if (!this.LanguageRepository.TryGetNextContainer(this.SelectedTranslationWork.KeyNotification, -1, out var lc))
-        {
-            return;
-        }
-
-        this.UpdateSelectedTranslationWork(lc);
-    }
-
-    protected void SetNextTranslationWork()
-    {
-        if (this.SelectedTranslationWork.KeyType == LanguageKeyTypes.Undefined)
-        {
-            return;
-        }
-
-        if (!this.LanguageRepository.TryGetNextContainer(this.SelectedTranslationWork.KeyNotification, 1, out var lc))
-        {
-            return;
-        }
-
-        this.UpdateSelectedTranslationWork(lc);
-    }
-
-    protected void SetTranslationWorkByStory()
-    {
-        if (this.StoryRepository.TryGetStory(this.SelectedStoryId, out var sc))
-        {
-            this.SetStory(sc);
-        }
-    }
-
-    protected void SetPreviousStory()
-    {
-        if (this.StoryRepository.TryGetNextStory(this.SelectedStoryId, -1, out var sc))
-        {
-            this.SelectedStoryId = sc.Id;
-            this.SetStory(sc);
-        }
-    }
-
-    protected void SetNextStory()
-    {
-        if (this.StoryRepository.TryGetNextStory(this.SelectedStoryId, 1, out var sc))
-        {
-            this.SelectedStoryId = sc.Id;
-            this.SetStory(sc);
-        }
-    }
-
-    protected void SetPreviousStoryIndex() => this.SetStoryIndexByOffset(-1);
-
-    protected void SetNextStoryIndex() => this.SetStoryIndexByOffset(1);
-
-    protected void SearchStoryByLanguageTalk()
-    {
-        if (!this.PluginIsFound)
-        {
-            this.Snackbar.Add("プラグインフォルダがセットされていないか, 有効ではありません.", Severity.Error);
-            return;
-        }
-        if (this.SelectedTranslationKeyNotification.KeyType != LanguageKeyTypes.LanguageTalk)
-        {
-            return;
-        }
-
-        Task.Run(async () =>
-        {
-            var key = this.SelectedTranslationKeyNotification.Key;
-            var sc = await this.StoryRepository.SearchStoryAsync(key).ConfigureAwait(false);
-            if (sc == null)
+            if (this.SelectedSLC == null)
             {
                 return;
             }
-            this.SelectedStoryId = sc.Id;
-            this.SelectedStoryIndex = sc.Conversations.FindIndex(x => x.SentenceKey == key);
-            this.SetStory(sc);
-        });
-    }
-
-    protected void SearchLanguagePattern()
-    {
-        if (!this.PluginIsFound)
-        {
-            this.Snackbar.Add("プラグインフォルダがセットされていないか, 有効ではありません.", Severity.Error);
-            return;
+            this.SelectedSLC.UpdateUserTranslation(this.CurrentUserTranslation);
+            tlStore.RequestTemporarySave();
+            keyNotification.Remove(this.SelectedSLC.NotifiedKey);
         }
-
-        Task.Run(async () =>
-        {
-            var searchedItems = await this.LanguageRepository.SearchContainersAsync(this.LanguageSearchPattern).ConfigureAwait(false);
-            foreach (var item in searchedItems)
-            {
-                item.TimeStamp = DateTime.Now;
-            }
-            this.KeyNotification.ForceNotify(searchedItems);
-            this.Snackbar.Add($"{searchedItems.Count()}件見つかりました.");
-        });
     }
 
-    protected void SearchTranslationPattern()
+    public void SelectPreviousContainer()
+        => this.SelectOffsetContainer(-1);
+
+    public void SelectNextContainer()
+        => this.SelectOffsetContainer(1);
+
+    public void SearchTextPattern()
     {
         if (!this.PluginIsFound)
         {
-            this.Snackbar.Add("プラグインフォルダがセットされていないか, 有効ではありません.", Severity.Error);
-            return;
-        }
-
-        Task.Run(async () =>
-        {
-            var searchedItems = await this.TranslationRepository.SearchTranslationAsync(this.TranslationSearchPattern).ConfigureAwait(false);
-            foreach (var item in searchedItems)
-            {
-                item.TimeStamp = DateTime.Now;
-            }
-            this.KeyNotification.ForceNotify(searchedItems);
-            this.Snackbar.Add($"{searchedItems.Count()}件見つかりました.");
-        });
-    }
-
-    protected void SaveBackup()
-    {
-        if (!this.PluginIsFound)
-        {
-            this.Snackbar.Add("プラグインフォルダがセットされていないか, 有効ではありません.", Severity.Error);
-            return;
-        }
-
-        Task.Run(async () =>
-        {
-            var opts = new FilePickerOptions();
-            opts.Filters["JSONファイル"] = [".json"];
-            var path = await this.CustomDialog.SaveFileAsync(opts);
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-
-            var json = await this.TranslationRepository.SaveBackupAsync(path).ConfigureAwait(false);
-            this.Snackbar.Add("保存完了", Severity.Info);
-        });
-    }
-
-    protected void LoadBackup()
-    {
-        if (!this.PluginIsFound)
-        {
-            this.Snackbar.Add("プラグインフォルダがセットされていないか, 有効ではありません.", Severity.Error);
+            snackbar.Snackbar?.Add(
+                "プラグインディレクトリがセットされていないか, 有効ではありません.",
+                MudBlazor.Severity.Error);
             return;
         }
 
         this.InvokeAsync(async () =>
         {
-            var isConfirmed = await this.CustomDialog.ConfirmAsync(
-                "バックアップをロードすると現在の翻訳ファイル群は上書きされます. よろしいですか？", null, "実行");
-            if (!isConfirmed)
-            {
-                return;
-            }
+            var items = await tlStore
+                .SearchTextAsync(this.SelectedSearchRange, this.TextSearchPatternString)
+                .ConfigureAwait(false);
+            keyNotification.ForceNotify(items);
+            snackbar.Snackbar?.Add($"{items.Count}件見つかりました.");
+        });
+    }
 
+    public void SelectPreviousStory()
+        => this.SelectOffsetStory(-1);
+
+    public void SelectNextStory()
+        => this.SelectOffsetStory(1);
+
+    public void SelectPreviousStoryTalk()
+        => this.SelectOffsetStoryTalk(-1);
+
+    public void SelectNextStoryTalk()
+        => this.SelectOffsetStoryTalk(1);
+
+    public void SelectStoryBySelectedContainer()
+    {
+        if (this.SelectedSLC == null)
+        {
+            return;
+        }
+        if (!storyStore.TryGetStory(this.SelectedSLC.NotifiedKey.Key, out var story))
+        {
+            return;
+        }
+
+        this.SetStoryProperties(
+            story.storyName, story.talkPair.SentenceKey, story.talkPair.SpeakerKey);
+    }
+
+    public void ExportDocx()
+    {
+        if (!this.PluginIsFound)
+        {
+            snackbar.Snackbar?.Add(
+                "プラグインディレクトリがセットされていないか, 有効ではありません.",
+                MudBlazor.Severity.Error);
+            return;
+        }
+
+        this.InvokeAsync(async () =>
+        {
             var opts = new FilePickerOptions();
-            opts.Filters["JSONファイル"] = [".json"];
-            var path = await this.CustomDialog.OpenFileAsync(opts);
+            opts.Filters["Word文書ファイル"] = [".docx"];
+            var path = await customDialog.SaveFileAsync(opts);
             if (string.IsNullOrEmpty(path))
             {
                 return;
             }
 
-            await this.TranslationRepository.LoadBackupAsync(path).ConfigureAwait(false);
-            this.Snackbar.Add("上書き完了", Severity.Info);
+            tlStore.ExportDocx(path);
+            snackbar.Snackbar?.Add($"出力完了: {path}");
         });
     }
 
-    protected void SerializeTranslations()
+    public void ImportDocx()
     {
         if (!this.PluginIsFound)
         {
-            this.Snackbar.Add("プラグインフォルダがセットされていないか, 有効ではありません.", Severity.Error);
+            snackbar.Snackbar?.Add(
+                "プラグインディレクトリがセットされていないか, 有効ではありません.",
+                MudBlazor.Severity.Error);
             return;
         }
 
-        Task.Run(async () =>
+        this.InvokeAsync(async () =>
         {
-            var res = await this.TranslationRepository.SerializeAsync().ConfigureAwait(false);
-            if (res)
+            var opts = new FilePickerOptions();
+            opts.Filters["Word文書ファイル"] = [".docx"];
+            var path = await customDialog.OpenFileAsync(opts);
+            if (string.IsNullOrEmpty(path))
             {
-                this.Snackbar.Add("保存完了", Severity.Info);
+                return;
             }
-            else
-            {
-                this.Snackbar.Add("保存失敗", Severity.Error);
-            }
+
+            tlStore.ImportDocx(path);
+            snackbar.Snackbar?.Add($"入力完了: {path}");
         });
     }
 
-    protected void ReportDiff() => this.InvokeAsync(async () =>
+    public void SerializeTranslations()
     {
-        var isConfirmed = await this.CustomDialog.ConfirmAsync(
-            "現在のプラグインフォルダと選択するフォルダで原文/翻訳の比較を行います. 実行しますか？", null, "実行");
-        if (!isConfirmed)
+        Task.Run(() =>
         {
-            return;
-        }
-
-        var path = await this.CustomDialog.OpenFolderAsync();
-        if (string.IsNullOrEmpty(path))
-        {
-            return;
-        }
-
-        _ = Task.Run(async () =>
-        {
-            await Task.WhenAll(
-            [
-                this.LanguageRepository.ReportDiffAsync(path),
-                this.TranslationRepository.ReportDiffAsync(path)
-            ]).ConfigureAwait(false);
-            this.Snackbar.Add("プラグインフォルダにレポートを出力しました", Severity.Info);
+            tlStore.SerializeTranslations(
+                this.UsePlaceholderMode);
+            snackbar.Snackbar?.Add($"メインプラグインディレクトリに翻訳を書き出しました.");
         });
+    }
+
+    public void ReportDiff() => this.InvokeAsync(async () =>
+    {
+        var opts = new FilePickerOptions();
+        opts.Filters["ステージングファイル"] = [".json", ".tmp"];
+        var srcPath = await customDialog.OpenFileAsync(opts);
+        if (string.IsNullOrEmpty(srcPath))
+        {
+            return;
+        }
+
+        opts.Filters.Clear();
+        opts.Filters["Markdownファイル"] = [".md"];
+        var dstPath = await customDialog.SaveFileAsync(opts);
+        if (string.IsNullOrEmpty(dstPath))
+        {
+            return;
+        }
+
+        tlStore.ReportStagingDiff(srcPath, dstPath, this.UseSrcAsComparisonBase);
+        snackbar.Snackbar?.Add($"レポートを出力しました: {dstPath}");
     });
 
-    private void UpdateNotifiedLanguages()
+    public void UpdateCacheWithStagingFile() => this.InvokeAsync(async () =>
+    {
+        var opts = new FilePickerOptions();
+        opts.Filters["ステージングファイル"] = [".json"];
+        var srcPath = await customDialog.OpenFileAsync(opts);
+        if (string.IsNullOrEmpty(srcPath))
+        {
+            return;
+        }
+
+        tlStore.UpdateCacheWithStagingFile(srcPath);
+        keyNotification.ForceNotifyAll();
+        snackbar.Snackbar?.Add("新たなステージングファイルでキャッシュを更新しました");
+    });
+
+    private void OnKeyNotified(List<LanguageKey> kns) => this.InvokeAsync(() =>
     {
         this.NotifiedLanguages.Clear();
-        foreach (var kn in this.KeyNotification.KeyNotifications)
+        foreach (var kn in kns)
         {
-            if (this.SelectedNotificationFilter == LanguageKeyTypes.Language
-                && kn.KeyType != LanguageKeyTypes.Language)
+            if (!tlStore.TryGetContainer(kn, out var container))
             {
                 continue;
             }
-            else if (this.SelectedNotificationFilter == LanguageKeyTypes.LanguageTalk
-                && kn.KeyType != LanguageKeyTypes.LanguageTalk)
+            if (this.FilterType != null
+                && kn.KeyType != this.FilterType)
             {
                 continue;
             }
-            else if (this.IsFilterTranslated
-                && this.TranslationRepository.TryGetTranslation(kn, out _))
+            if (this.FilterTranslated && container.IsTranslated)
             {
                 continue;
             }
-            var isIgnored = this.IgnoreList.IsIgnored(kn);
-            if (this.IsFilterIgnored && isIgnored)
+            var isIgnored = ignoreList.IsIgnored(kn);
+            if (this.FilterIgnored && isIgnored)
             {
                 continue;
             }
 
-            if (this.LanguageRepository.TryGetContainer(kn, out var lc))
-            {
-                this.NotifiedLanguages.Push(
-                    new LanguageContainerViewModel(
-                        lc, isIgnored, this.UpdateSelectedTranslationWork, x =>
-                        {
-                            if (x.IsIgnored)
-                            {
-                                this.IgnoreList.Remove(x.KeyNotification);
-                                x.IsIgnored = false;
-                            }
-                            else
-                            {
-                                this.IgnoreList.Add(x.KeyNotification);
-                                this.KeyNotification.Remove(x.KeyNotification);
-                            }
-                        }, y =>
-                        {
-                            this.KeyNotification.Remove(y.KeyNotification);
-                        }));
-            }
+            this.NotifiedLanguages.Add(new(container, kn, isIgnored));
         }
-        this.InvokeAsync(this.StateHasChanged);
-    }
+    });
 
-    private void UpdateSelectedTranslationWork(LanguageContainer lc)
+    private void SelectContainerByKeyType() => this.InvokeAsync(() =>
     {
-        var userTranslation = string.Empty;
-        if (this.TranslationRepository.TryGetTranslation(lc.KeyNotification, out var tmpUserTrans))
-        {
-            userTranslation = tmpUserTrans;
-        }
-
-        this.SelectedTranslationWork = new TranslationWorkViewModel(lc, userTranslation, x =>
-        {
-            if (string.IsNullOrEmpty(x.UserTranslation))
-            {
-                return;
-            }
-
-            var kn = x.KeyNotification;
-            this.KeyNotification.Remove(kn);
-            this.TranslationRepository.SaveTranslation(kn, x.UserTranslation);
-        });
-        Task.Run(async () =>
-        {
-            if (!this.IsTranslationApiUsed)
-            {
-                return;
-            }
-            this.ApiTranslatedString = await this.TranslationApi.TranslateAsync(this.SelectedTranslationWork.SimpleChinese, default).ConfigureAwait(false);
-            await this.InvokeAsync(this.StateHasChanged);
-        });
-        this.SelectedTranslationKeyNotification = this.SelectedTranslationWork.KeyNotification;
-    }
-
-    private void SetStory(StoryContainer sc)
-    {
-        this._selectedStory = sc;
-        this.SelectedStoryIndex = Math.Max(0, Math.Min(this.SelectedStoryIndex, sc.Conversations.Count - 1));
-        var cc = sc.Conversations[this.SelectedStoryIndex];
-        this.SetConversation(cc);
-    }
-
-    private void SetStoryIndexByOffset(int idxOffset)
-    {
-        var tmpIdx = this.SelectedStoryIndex + idxOffset;
-        if (this._selectedStory == null || tmpIdx < 0 || this._selectedStory.Conversations.Count <= tmpIdx)
+        if (this._selectedType == null)
         {
             return;
         }
-        this.SelectedStoryIndex = tmpIdx;
-        var cc = this._selectedStory.Conversations[this.SelectedStoryIndex];
-        this.SetConversation(cc);
-    }
-
-    private void SetConversation(ConversationContainer cc)
-    {
-        if (!this.LanguageRepository.TryGetContainer(new KeyNotification
-        {
-            KeyType = LanguageKeyTypes.LanguageTalk,
-            Key = cc.SentenceKey
-        }, out var lc))
+        if (!tlStore.TryGetKeyTypeFirstContainer(this._selectedType.Value, out var tup))
         {
             return;
         }
-        this.UpdateSelectedTranslationWork(lc);
-        if (0 < cc.SpeakerKey && this.LanguageRepository.TryGetContainer(new KeyNotification
+
+        if (ignoreList.IsIgnored(tup.kn))
         {
-            KeyType = LanguageKeyTypes.LanguageTalk,
-            Key = cc.SpeakerKey
-        }, out var lcSpeaker))
-        {
-            this.SpeakerName = lcSpeaker.SimpleChinese;
+            snackbar.Snackbar?.Add("その翻訳キーは非表示に設定されています.", MudBlazor.Severity.Warning);
         }
-        else
+        this.SelectLanguageContainer(new(tup.container, tup.kn, false));
+    });
+
+    private void SelectOffsetContainer(int offset)
+    {
+        if (this.SelectedSLC == null)
+        {
+            return;
+        }
+        if (!tlStore.TryGetNextContainer(
+            this.SelectedSLC.NotifiedKey, offset, out var tup))
+        {
+            return;
+        }
+        if (ignoreList.IsIgnored(tup.nextKn))
+        {
+            snackbar.Snackbar?.Add("その翻訳キーは非表示に設定されています.", MudBlazor.Severity.Warning);
+        }
+
+        this.SelectLanguageContainer(new(tup.container, tup.nextKn, false));
+    }
+
+    private void SetStoryProperties(string? storyName, int? sentenceKey, int? speakerKey)
+    {
+        this.SelectedStory = storyName;
+        this.SelectedStorySentenceKey = sentenceKey;
+        if (speakerKey == null
+            || !tlStore.TryGetTalkContainer(speakerKey.Value, out var tup))
         {
             this.SpeakerName = string.Empty;
         }
-        this.InvokeAsync(this.StateHasChanged);
+        else
+        {
+            this.SpeakerName =
+                string.IsNullOrEmpty(tup.container.Japanese)
+                ? tup.container.Original
+                : tup.container.Japanese;
+        }
+    }
+
+    private void SelectOffsetStory(int offset)
+    {
+        var nextStoryName = string.Empty;
+        var nextSentenceKey = -1;
+        var nextSpeakerKey = -1;
+        if (string.IsNullOrEmpty(this.SelectedStory))
+        {
+            if (storyStore.TryGetPlaceholderStory(out var story))
+            {
+                nextStoryName = story.storyName;
+                nextSentenceKey = story.talkPair.SentenceKey;
+                nextSpeakerKey = story.talkPair.SpeakerKey;
+            }
+        }
+        else if (storyStore.TryGetNextStory(
+            this.SelectedStory, offset, out var story))
+        {
+            nextStoryName = story.storyName;
+            nextSentenceKey = story.talkPair.SentenceKey;
+            nextSpeakerKey = story.talkPair.SpeakerKey;
+        }
+        if (string.IsNullOrEmpty(nextStoryName)
+            || !tlStore.TryGetTalkContainer(nextSentenceKey, out var tup))
+        {
+            snackbar.Snackbar?.Add("ストーリーのセットに失敗しました.", MudBlazor.Severity.Warning);
+            return;
+        }
+
+        if (ignoreList.IsIgnored(tup.kn))
+        {
+            snackbar.Snackbar?.Add("その翻訳キーは非表示に設定されています.", MudBlazor.Severity.Warning);
+        }
+        this.SetStoryProperties(nextStoryName, nextSentenceKey, nextSpeakerKey);
+        this.SelectLanguageContainer(new(tup.container, tup.kn, false));
+    }
+
+    private void SelectOffsetStoryTalk(int offset)
+    {
+        var nextStoryName = string.Empty;
+        var nextSentenceKey = -1;
+        var nextSpeakerKey = -1;
+        if (string.IsNullOrEmpty(this.SelectedStory))
+        {
+            if (storyStore.TryGetPlaceholderStory(out var story))
+            {
+                nextStoryName = story.storyName;
+                nextSentenceKey = story.talkPair.SentenceKey;
+                nextSpeakerKey = story.talkPair.SpeakerKey;
+            }
+        }
+        else if (this.SelectedStorySentenceKey != null
+            && storyStore.TryGetNextStoryTalkPair(
+                this.SelectedStory, this.SelectedStorySentenceKey.Value, offset,
+                out var nextPair))
+        {
+            nextStoryName = this.SelectedStory;
+            nextSentenceKey = nextPair.SentenceKey;
+            nextSpeakerKey = nextPair.SpeakerKey;
+        }
+        if (string.IsNullOrEmpty(nextStoryName)
+            || !tlStore.TryGetTalkContainer(nextSentenceKey, out var tup))
+        {
+            snackbar.Snackbar?.Add("ストーリーのセットに失敗しました.", MudBlazor.Severity.Warning);
+            return;
+        }
+
+        if (ignoreList.IsIgnored(tup.kn))
+        {
+            snackbar.Snackbar?.Add("その翻訳キーは非表示に設定されています.", MudBlazor.Severity.Warning);
+        }
+        this.SetStoryProperties(nextStoryName, nextSentenceKey, nextSpeakerKey);
+        this.SelectLanguageContainer(new(tup.container, tup.kn, false));
     }
 
     public void Dispose()
     {
-        this.IgnoreList.Save();
-        this.KeyNotification.KeyNotifications.CollectionChanged -= this.KeyNotifications_CollectionChanged;
         GC.SuppressFinalize(this);
     }
 }

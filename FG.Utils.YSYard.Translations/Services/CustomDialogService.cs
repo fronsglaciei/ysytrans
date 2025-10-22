@@ -1,47 +1,14 @@
-﻿using FG.Utils.YSYard.Translations.Components;
-using FG.Utils.YSYard.Translations.Contracts.Services;
-using FG.Utils.YSYard.Translations.Models;
-using MudBlazor;
+﻿using FG.Utils.YSYard.Translations.Models;
 
 namespace FG.Utils.YSYard.Translations.Services;
 
-public class CustomDialogService : ICustomDialogService
+public class CustomDialogService
 {
-    public IDialogService? MudDialog { get; set; }
-
     public Func<FilePickerOptions?, Task<string>>? OpenFilePicker { get; set; }
 
     public Func<FilePickerOptions?, Task<string>>? SaveFilePicker { get; set; }
 
     public Func<Task<string>>? FolderPicker { get; set; }
-
-    public async Task<bool> ConfirmAsync(string content, string? title = null, string? buttonText = null)
-    {
-        if (this.MudDialog == null)
-        {
-            throw new NullReferenceException($"{nameof(MudDialog)}");
-        }
-        var dialogParams = new DialogParameters<ConfirmDialog>
-        {
-            { x => x.ContentText, content },
-            { x => x.ButtonText, buttonText ?? "確定" }
-        };
-        var dialogRef = this.MudDialog.Show<ConfirmDialog>(title ?? "確認", dialogParams);
-        var res = await dialogRef.Result;
-        if (res == null)
-        {
-            return false;
-        }
-        if (res.Canceled)
-        {
-            return false;
-        }
-        if (res.Data is not bool isConfirmed)
-        {
-            return false;
-        }
-        return isConfirmed;
-    }
 
     public Task<string> OpenFileAsync(FilePickerOptions? options)
     {

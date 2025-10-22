@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace FG.Defs.YSYard.Translations.Devs
 {
-    public class KeyNotificationClient : KeyNotificationDefs, IObservable<int>
+    public class KeyNotificationClient<T> : KeyNotificationDefs, IObservable<int>
+        where T : KeyNotificationBase, new()
     {
         private readonly MemoryMappedFile _mem;
 
@@ -17,7 +18,7 @@ namespace FG.Defs.YSYard.Translations.Devs
 
         private readonly Task _mainTask;
 
-        private readonly ConcurrentQueue<KeyNotification> _notifications = new ConcurrentQueue<KeyNotification>();
+        private readonly ConcurrentQueue<T> _notifications = new ConcurrentQueue<T>();
 
         private readonly List<IObserver<int>> _observers = new List<IObserver<int>>();
 
@@ -39,16 +40,20 @@ namespace FG.Defs.YSYard.Translations.Devs
                         continue;
                     }
 
-                    var data = this._memAccess.ReadData<KeyNotification.Layout>(header.Count);
-                    foreach (var kn in data)
+                    var content = this._memAccess.ReadContent(header);
+                    var data = new List<T>();
+                    var pos = 0;
+                    for (var i = 0; i < header.Count; i++)
                     {
-                        var item = kn.ToObject();
-                        item.TimeStamp = DateTime.Now;
-                        this._notifications.Enqueue(item);
+                        var kn = new T();
+                        pos += kn.FromBytes(content, pos);
+
+                        kn.TimeStamp = DateTime.Now;
+                        this._notifications.Enqueue(kn);
                     }
                     foreach (var observer in this._observers)
                     {
-                        observer.OnNext(data.Length);
+                        observer.OnNext(header.Count);
                     }
 
                     this._memAccess.WriteHeader(MemoryArrayHeader.ReadCompleted);
@@ -65,9 +70,9 @@ namespace FG.Defs.YSYard.Translations.Devs
             return new Unsubscriber(observer, this._observers);
         }
 
-        public IEnumerable<KeyNotification> Flush()
+        public IEnumerable<T> Flush()
         {
-            var list = new List<KeyNotification>();
+            var list = new List<T>();
             while (this._notifications.TryDequeue(out var notification))
             {
                 list.Add(notification);

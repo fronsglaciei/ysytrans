@@ -4,8 +4,13 @@ namespace FG.Utils.YSYard.Translations.Interops;
 
 public static class NativeMethods
 {
+    [DllImport("shlwapi.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+    private static extern int StrCmpLogicalW(string x, string y);
+
     [DllImport("dwmapi.dll")]
     private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+    public static int LogicalCompare(string x, string y) => StrCmpLogicalW(x, y);
 
     private const int BUILD_VERSION_17763 = 17763;
     private const int BUILD_VERSION_18985 = 18985;

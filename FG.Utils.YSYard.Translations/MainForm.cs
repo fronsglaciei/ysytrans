@@ -1,6 +1,6 @@
-using FG.Utils.YSYard.Translations.Contracts.Services;
 using FG.Utils.YSYard.Translations.Interops;
 using FG.Utils.YSYard.Translations.Models;
+using FG.Utils.YSYard.Translations.Services;
 using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 
 namespace FG.Utils.YSYard.Translations;
@@ -19,7 +19,7 @@ public partial class MainForm : Form
         }
         this._thContext = SynchronizationContext.Current;
 
-        var fDialog = this._host.GetService<ICustomDialogService>();
+        var fDialog = this._host.GetService<CustomDialogService>();
         if (fDialog != null)
         {
             fDialog.OpenFilePicker = this.PickOpenFileAsync;

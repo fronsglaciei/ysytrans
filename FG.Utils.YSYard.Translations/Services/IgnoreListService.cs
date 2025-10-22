@@ -1,17 +1,15 @@
 ﻿using FG.Defs.YSYard.Translations.Devs;
 using FG.Utils.YSYard.Translations.Contracts.Models;
-using FG.Utils.YSYard.Translations.Contracts.Services;
 using FG.Utils.YSYard.Translations.Models;
-using System.Text;
 using System.Text.Json;
 
 namespace FG.Utils.YSYard.Translations.Services;
 
-public class IgnoreListService : IIgnoreListService
+public class IgnoreListService
 {
     private readonly IWritableOptions<AppConfig> _config;
 
-    private readonly HashSet<KeyNotification> _ignoredKeys = [];
+    private readonly HashSet<LanguageKey> _ignoredKeys = [];
 
     public IgnoreListService(IWritableOptions<AppConfig> config)
     {
@@ -21,7 +19,7 @@ public class IgnoreListService : IIgnoreListService
         {
             try
             {
-                var json = File.ReadAllText(this._config.Value.IgnoreListPath, Encoding.UTF8);
+                var json = File.ReadAllText(this._config.Value.IgnoreListPath);
                 var obj = JsonSerializer.Deserialize<IgnoreList>(json);
                 if (obj != null)
                 {
@@ -35,11 +33,11 @@ public class IgnoreListService : IIgnoreListService
         }
     }
 
-    public bool IsIgnored(KeyNotification kn) => this._ignoredKeys.Contains(kn);
+    public bool IsIgnored(LanguageKey kn) => this._ignoredKeys.Contains(kn);
 
-    public void Add(KeyNotification kn) => this._ignoredKeys.Add(kn);
+    public void Add(LanguageKey kn) => this._ignoredKeys.Add(kn);
 
-    public void Remove(KeyNotification kn) => this._ignoredKeys.Remove(kn);
+    public void Remove(LanguageKey kn) => this._ignoredKeys.Remove(kn);
 
     public void Save()
     {
@@ -47,10 +45,10 @@ public class IgnoreListService : IIgnoreListService
         {
             var obj = new IgnoreList
             {
-                Items = new(this._ignoredKeys)
+                Items = [.. this._ignoredKeys]
             };
             var json = JsonSerializer.Serialize(obj);
-            File.WriteAllText(this._config.Value.IgnoreListPath, json, Encoding.UTF8);
+            File.WriteAllText(this._config.Value.IgnoreListPath, json);
         }
     }
 }

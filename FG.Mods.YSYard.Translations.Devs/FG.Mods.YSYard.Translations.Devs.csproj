@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>FG.Mods.YSYard.Translations.Devs</AssemblyName>
     <Product>Translator Supports</Product>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -34,28 +34,28 @@
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>ref_libs.il2cpp\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\ref.user\il2cpp\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Il2Cppmscorlib">
-      <HintPath>ref_libs.il2cpp\Il2Cppmscorlib.dll</HintPath>
+      <HintPath>..\ref.user\il2cpp\Il2Cppmscorlib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>ref_libs.il2cpp\UnityEngine.dll</HintPath>
+      <HintPath>..\ref.user\il2cpp\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>ref_libs.il2cpp\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\ref.user\il2cpp\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>ref_libs.il2cpp\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\ref.user\il2cpp\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	<Exec Command="pwsh.exe -command &quot;&amp; { .misc/deploy.ps1 } &quot;" />
+    <Exec Command="pwsh -ExecutionPolicy Bypass -NoProfile -File .\deploy.ps1 -OutDir $(OutDir) -ConfigPath deploy.json.user" />
   </Target>
 </Project>

@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
-@inject IDialogService MudDialog
-@inject ICustomDialogService CustomDialog
+@inject ISnackbar MudSnackbar
+@inject SharedSnackbarService SharedSnackbar
 
 <MudThemeProvider IsDarkMode="true" Theme="MainTheme" />
 <MudDialogProvider />
@@ -30,9 +30,9 @@
     {
         Typography = new()
         {
-            Default = new()
+            Default = new DefaultTypography()
             {
-                FontFamily = ["Yu Gothic UI", "sans-serif", "Poppins", "Helvetica", "Arial"]
+                FontFamily = new[] { "Yu Gothic UI", "sans-serif", "Poppins", "Helvetica", "Arial" }
             }
         }
     };
@@ -40,7 +40,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        this.CustomDialog.MudDialog = this.MudDialog;
+        this.SharedSnackbar.Snackbar = this.MudSnackbar;
     }
 
     private bool _drawerOpen = false;

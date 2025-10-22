@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO.MemoryMappedFiles;
-using System.Runtime.InteropServices;
 
 namespace FG.Defs.YSYard.Translations.Devs
 {
@@ -40,26 +39,21 @@ namespace FG.Defs.YSYard.Translations.Devs
             this._memAccess.Write(0, ref tmp);
         }
 
-        internal T[] ReadData<T>(int requestedCount) where T : struct
+        internal byte[] ReadContent(MemoryArrayHeader header)
         {
-            if (requestedCount < 1)
-            {
-                return new T[0];
-            }
-            var cnt = Math.Min(requestedCount, this._size / Marshal.SizeOf(typeof(T)));
-            var data = new T[cnt];
-            this._memAccess.ReadArray(MemoryArrayHeader.HEADER_SIZE, data, 0, cnt);
+            var data = new byte[header.ContentSize];
+            this._memAccess.ReadArray(MemoryArrayHeader.HEADER_SIZE, data, 0, header.ContentSize);
             return data;
         }
 
-        internal void WriteData<T>(T[] data) where T : struct
+        internal void WriteContent(byte[] data)
         {
-            if (data.Length < 1)
+            if (this._size < MemoryArrayHeader.HEADER_SIZE + data.Length)
             {
-                return;
+                throw new InvalidOperationException($"Specified memory size is less than content size : {this._size}");
             }
-            var cnt = Math.Min(data.Length, this._size / Marshal.SizeOf(typeof(T)));
-            this._memAccess.WriteArray(MemoryArrayHeader.HEADER_SIZE, data, 0, cnt);
+
+            this._memAccess.WriteArray(MemoryArrayHeader.HEADER_SIZE, data, 0, data.Length);
         }
 
         public void Dispose()

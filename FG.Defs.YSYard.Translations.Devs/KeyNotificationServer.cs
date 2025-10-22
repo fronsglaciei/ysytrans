@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace FG.Defs.YSYard.Translations.Devs
 {
-    public class KeyNotificationServer : KeyNotificationDefs
+    public class KeyNotificationServer<T> : KeyNotificationDefs
+        where T : KeyNotificationBase, new()
     {
         private readonly MemoryMappedFile _mem;
 
@@ -19,7 +20,7 @@ namespace FG.Defs.YSYard.Translations.Devs
 
         private readonly Task _mainTask;
 
-        private readonly ConcurrentQueue<KeyNotification> _notifications = new ConcurrentQueue<KeyNotification>();
+        private readonly ConcurrentQueue<T> _notifications = new ConcurrentQueue<T>();
 
         public KeyNotificationServer()
         {
@@ -41,7 +42,7 @@ namespace FG.Defs.YSYard.Translations.Devs
             }, this._cts.Token);
         }
 
-        public void Notify(KeyNotification kn) => this._notifications.Enqueue(kn);
+        public void Notify(T kn) => this._notifications.Enqueue(kn);
 
         private bool TryWriteNotifications()
         {
@@ -59,7 +60,7 @@ namespace FG.Defs.YSYard.Translations.Devs
             this._memAccess.WriteHeader(MemoryArrayHeader.Write);
 
             var deqCnt = Math.Min(this._notifications.Count, MAX_ELEMENTS_COUNT);
-            var tmp = new List<KeyNotification>();
+            var tmp = new List<T>();
             for (var i = 0; i < deqCnt; i++)
             {
                 if (this._notifications.TryDequeue(out var notification))
@@ -67,10 +68,10 @@ namespace FG.Defs.YSYard.Translations.Devs
                     tmp.Add(notification);
                 }
             }
-            var data = tmp.Select(x => x.ToStruct()).ToArray();
+            var content = this.MergeToBytes(tmp);
             try
             {
-                this._memAccess.WriteData(data);
+                this._memAccess.WriteContent(content);
             }
             catch (Exception ex)
             {
@@ -78,8 +79,22 @@ namespace FG.Defs.YSYard.Translations.Devs
                 return false;
             }
 
-            this._memAccess.WriteHeader(MemoryArrayHeader.WaitForRead(data.Length));
+            this._memAccess.WriteHeader(MemoryArrayHeader.WaitForRead(content.Length, tmp.Count));
             return true;
+        }
+
+        private byte[] MergeToBytes(List<T> kns)
+        {
+            var tmpBytes = kns.Select(x => x.ToBytes()).ToList();
+            var totalSize = tmpBytes.Select(x => x.Length).Sum();
+            var buf = new byte[totalSize];
+            var pos = 0;
+            foreach (var arr in tmpBytes)
+            {
+                arr.CopyTo(buf, pos);
+                pos += arr.Length;
+            }
+            return buf;
         }
 
         private async Task WaitForReadingAsync()

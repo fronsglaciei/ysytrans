@@ -3,7 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Unicode;
 
 namespace FG.Utils.YSYard.Translations.Models;
 
@@ -13,8 +15,14 @@ public class WritableOptions<T>(
 	IConfigurationRoot configuration,
 	string file) : IWritableOptions<T> where T : class, new()
 {
-	#region IOptions
-	private readonly IHostEnvironment _environment = environment;
+    private static readonly JsonSerializerOptions _jopts = new()
+    {
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+        WriteIndented = true,
+    };
+
+    #region IOptions
+    private readonly IHostEnvironment _environment = environment;
 	private readonly IOptionsMonitor<T> _options = options;
 	private readonly IConfigurationRoot _configuration = configuration;
 	#endregion
@@ -38,7 +46,7 @@ public class WritableOptions<T>(
 
         applyChanges(jobj);
 
-		var jsonWrite = JsonSerializer.Serialize(jobj);
+		var jsonWrite = JsonSerializer.Serialize(jobj, _jopts);
         File.WriteAllText(physicalPath, jsonWrite, Encoding.UTF8);
 
         this._configuration.Reload();

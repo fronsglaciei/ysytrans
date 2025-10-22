@@ -363,8 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # my definitions
-.misc/
-ref_libs*/
 /note.md
 /TODO.md
 .vscode/

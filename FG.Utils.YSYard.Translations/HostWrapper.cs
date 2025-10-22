@@ -1,7 +1,7 @@
-﻿using FG.Utils.YSYard.Translations.Contracts.Services;
-using FG.Utils.YSYard.Translations.Helpers;
+﻿using FG.Utils.YSYard.Translations.Helpers;
 using FG.Utils.YSYard.Translations.Models;
 using FG.Utils.YSYard.Translations.Services;
+using FG.Utils.YSYard.Translations.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,17 +27,20 @@ public class HostWrapper : IDisposable
     private static void WireupServices(HostBuilderContext context, IServiceCollection services)
     {
         services.AddWindowsFormsBlazorWebView();
-        services.AddMudServices(config =>
-        {
-            config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
-        });
-        services.AddSingleton<ICustomDialogService, CustomDialogService>();
-        services.AddSingleton<IKeyNotificationService, KeyNotificationService>();
-        services.AddSingleton<ILanguageRepositoryService, LanguageRepositoryService>();
-        services.AddSingleton<ITranslationRepositoryService, TranslationRepositoryService>();
-        services.AddSingleton<IStoryRepositoryService, StoryRepositoryService>();
-        services.AddSingleton<ITranslationApiService, GoogleLanguageApiService>();
-        services.AddSingleton<IIgnoreListService, IgnoreListService>();
+
+        services
+            .AddMudServices(config =>
+            {
+                config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopRight;
+            })
+            .AddSingleton<CustomDialogService>()
+            .AddSingleton<SharedSnackbarService>()
+            .AddSingleton<KeyNotificationService>()
+            .AddSingleton<TranslationStoreService>()
+            .AddSingleton<TranslationApiService>()
+            .AddSingleton<IgnoreListService>()
+            .AddSingleton<StoryStoreService>()
+            .AddSingleton<TranslationPageViewModel>();
 
         services.ConfigureWritable<AppConfig>(context, ".config/config.json");
 

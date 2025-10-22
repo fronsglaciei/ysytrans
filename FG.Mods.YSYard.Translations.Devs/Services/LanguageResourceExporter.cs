@@ -2,7 +2,6 @@
 using Plot;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using UnityEngine;
@@ -14,6 +13,11 @@ public static class LanguageResourceExporter
 {
     private const string STORY_MAP_PATH = "Story/storyMap";
 
+    private static readonly DataContractJsonSerializerSettings _jSettings = new DataContractJsonSerializerSettings
+    {
+        UseSimpleDictionaryFormat = true,
+    };
+
     private static SysTask.Task _exportTask = SysTask.Task.CompletedTask;
 
     public static void ExportLanguages()
@@ -23,53 +27,30 @@ public static class LanguageResourceExporter
             return;
         }
 
-        var langSerializer = new DataContractJsonSerializer(typeof(LanguageExport));
-        var taskLangs = new List<SysTask.Task>();
+        var stgSerializer = new DataContractJsonSerializer(typeof(StagingLanguage), _jSettings);
+        var obj = new StagingLanguage();
         foreach (var x in LanguageManager.Instance.GetAllItem().Items)
         {
-            taskLangs.Add(SysTask.Task.Run(() =>
+            obj.Languages[x.Key] = new StagingLanguageContainer
             {
-                var obj = new LanguageExport
-                {
-                    Key = x.Key,
-                    SimpleChinese = x.Chinese ?? string.Empty,
-                    TraditionalChinese = x.ChineseFT ?? string.Empty,
-                    English = x.LanguageEng ?? string.Empty,
-                    Japanese = x.LanguageJpn ?? string.Empty
-                };
-                var path = PathProvider.PathDef.GetExportedFilePath(new KeyNotification
-                {
-                    KeyType = LanguageKeyTypes.Language,
-                    Key = x.Key,
-                });
-                using var fs = new FileStream(path, FileMode.Create);
-                langSerializer.WriteObject(fs, obj);
-            }));
+                Key = x.Key,
+                Original = string.IsNullOrEmpty(x.Chinese) ? string.Empty : x.Chinese,
+                English = string.IsNullOrEmpty(x.LanguageEng) ? string.Empty : x.LanguageEng,
+                Placeholder = string.IsNullOrEmpty(x.LanguageJpn) ? string.Empty : x.LanguageJpn,
+            };
         }
-        var langTalkSerializer = new DataContractJsonSerializer(typeof(LanguageTalkExport));
-        var taskLangTalks = new List<SysTask.Task>();
         foreach (var x in LanguageTalkManager.Instance.GetAllItem().Items)
         {
-            taskLangTalks.Add(SysTask.Task.Run(() =>
+            obj.LanguageTalks[x.Key] = new StagingLanguageContainer
             {
-                var obj = new LanguageTalkExport
-                {
-                    Key = x.Key,
-                    SimpleChinese = x.Chinese ?? string.Empty,
-                    TraditionalChinese = x.ChineseFT ?? string.Empty,
-                    English = x.LanguageEng ?? string.Empty,
-                    Japanese = x.LanguageJP ?? string.Empty
-                };
-                var path = PathProvider.PathDef.GetExportedFilePath(new KeyNotification
-                {
-                    KeyType = LanguageKeyTypes.LanguageTalk,
-                    Key = x.Key,
-                });
-                using var fs = new FileStream(path, FileMode.Create);
-                langTalkSerializer.WriteObject(fs, obj);
-            }));
+                Key = x.Key,
+                Original = string.IsNullOrEmpty(x.Chinese) ? string.Empty : x.Chinese,
+                English = string.IsNullOrEmpty(x.LanguageEng) ? string.Empty : x.LanguageEng,
+                Placeholder = string.IsNullOrEmpty(x.LanguageJP) ? string.Empty : x.LanguageJP,
+            };
         }
-        _exportTask = SysTask.Task.WhenAll(new[] { taskLangs, taskLangTalks }.SelectMany(x => x));
+        using var fs = new FileStream(PathProvider.PathDef.StagingJsonPath, FileMode.Create);
+        stgSerializer.WriteObject(fs, obj);
     }
 
     public static void ExportStoryPlots()
@@ -80,11 +61,9 @@ public static class LanguageResourceExporter
             return;
         }
 
-        var i = 0;
-        var scs = new List<StoryContainer>();
+        var sd = new StoryDictionary();
         foreach (var m in storyMap.maps)
         {
-            i++;
             var levelDataBytes = ResourcesManager.Instance.Load<TextAsset>(m.path);
             if (levelDataBytes == null || levelDataBytes.bytes.Length < 1)
             {
@@ -103,39 +82,34 @@ public static class LanguageResourceExporter
                 continue;
             }
 
-            var sc = new StoryContainer
+            var stp = TraverseTalkPairs(t);
+            if (sd.Dict.TryGetValue(m.storyID, out var tmpPairs))
             {
-                Id = int.TryParse(m.storyID, out var tmpId) ? tmpId : -1,
-                Conversations = TraverseConversations(t)
-            };
-            if (sc.Id < 0)
-            {
-                continue;
+                tmpPairs.AddRange(stp);
             }
-            scs.Add(sc);
+            else
+            {
+                sd.Dict[m.storyID] = stp;
+            }
         }
-        var scSerializer = new DataContractJsonSerializer(typeof(StoryContainer));
-        var tasks = scs.Select(x => SysTask.Task.Run(() =>
-        {
-            var path = Path.Combine(PathProvider.PathDef.StoriesPath, $"{x.Id}.json");
-            using var fs = File.Create(path);
-            using var writer = JsonReaderWriterFactory.CreateJsonWriter(fs, Encoding.UTF8, true, true, "  ");
-            scSerializer.WriteObject(writer, x);
-            writer.Flush();
-        }));
-        SysTask.Task.WhenAll(tasks);
+
+        var sdSerializer = new DataContractJsonSerializer(typeof(StoryDictionary), _jSettings);
+        using var fs = File.Create(PathProvider.PathDef.StoryPath);
+        using var writer = JsonReaderWriterFactory.CreateJsonWriter(fs, Encoding.UTF8, true, true, "  ");
+        sdSerializer.WriteObject(writer, sd);
+        writer.Flush();
     }
 
-    private static List<ConversationContainer> TraverseConversations(ParentTask rootNode)
+    private static List<StoryTalkPair> TraverseTalkPairs(ParentTask rootNode)
     {
-        var list = new List<ConversationContainer>();
+        var list = new List<StoryTalkPair>();
         foreach (var child in rootNode.children)
         {
             var pt = child.TryCast<ParentTask>();
             if (pt == null)
             {
                 var tt = child.GetTaskType();
-                var cc = new ConversationContainer();
+                var stp = new StoryTalkPair();
                 switch (tt)
                 {
                     case TaskType.Say:
@@ -145,9 +119,9 @@ public static class LanguageResourceExporter
                             var conv = ConversationManager.Instance.GetItem(s.Data.conversationID);
                             if (conv != null)
                             {
-                                cc.SpeakerKey = conv.CharacterID;
+                                stp.SpeakerKey = conv.CharacterID;
                             }
-                            cc.SentenceKey = s.Data.conversationID;
+                            stp.SentenceKey = s.Data.conversationID;
                         }
                         break;
 
@@ -155,7 +129,7 @@ public static class LanguageResourceExporter
                         var pm = child.TryCast<PrivateMessage>();
                         if (pm != null)
                         {
-                            cc.SentenceKey = pm.leftmessageTalkID;
+                            stp.SentenceKey = pm.leftmessageTalkID;
                         }
                         break;
 
@@ -163,13 +137,13 @@ public static class LanguageResourceExporter
                         var spm = child.TryCast<SetPrivateMessage>();
                         if (spm != null)
                         {
-                            cc.SentenceKey = spm.Data.message.languageTalk;
+                            stp.SentenceKey = spm.Data.message.languageTalk;
                         }
                         break;
                 }
-                if (-1 < cc.SpeakerKey && -1 < cc.SentenceKey)
+                if (-1 < stp.SpeakerKey && -1 < stp.SentenceKey)
                 {
-                    list.Add(cc);
+                    list.Add(stp);
                 }
             }
             else
@@ -188,7 +162,7 @@ public static class LanguageResourceExporter
                         }
                     }
                 }
-                list.AddRange(TraverseConversations(pt));
+                list.AddRange(TraverseTalkPairs(pt));
             }
         }
 

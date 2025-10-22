@@ -2,11 +2,22 @@
 {
     internal class MemoryArrayHeader
     {
-        internal const int HEADER_SIZE = 8;
+        internal const int HEADER_SIZE = 12;
 
-        internal int Count { get; set; }
+        internal int ContentSize
+        {
+            get; set;
+        }
 
-        internal MemoryArrayStatus Status { get; set; }
+        internal int Count
+        {
+            get; set;
+        }
+
+        internal MemoryArrayStatus Status
+        {
+            get; set;
+        }
 
         internal static MemoryArrayHeader Idle => new MemoryArrayHeader
         {
@@ -18,8 +29,9 @@
             Status = MemoryArrayStatus.Write
         };
 
-        internal static MemoryArrayHeader WaitForRead(int count) => new MemoryArrayHeader
+        internal static MemoryArrayHeader WaitForRead(int contentSize, int count) => new MemoryArrayHeader
         {
+            ContentSize = contentSize,
             Count = count,
             Status = MemoryArrayStatus.WaitForRead
         };
@@ -29,16 +41,19 @@
             Status = MemoryArrayStatus.ReadCompleted
         };
 
-        internal Layout ToLayout() => new Layout(this.Count, (int)this.Status);
+        internal Layout ToLayout() => new Layout(this.ContentSize, this.Count, (int)this.Status);
 
         internal struct Layout
         {
+            internal int ContentSize;
+
             internal int Count;
 
             internal int Status;
 
-            internal Layout(int count, int status)
+            internal Layout(int contentSize, int count, int status)
             {
+                this.ContentSize = contentSize;
                 this.Count = count;
                 this.Status = status;
             }
@@ -47,6 +62,7 @@
             {
                 var obj = new MemoryArrayHeader
                 {
+                    ContentSize = this.ContentSize,
                     Count = this.Count
                 };
                 try

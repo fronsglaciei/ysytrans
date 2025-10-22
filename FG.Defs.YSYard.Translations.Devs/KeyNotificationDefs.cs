@@ -8,7 +8,7 @@ namespace FG.Defs.YSYard.Translations.Devs
 
         protected const int MAX_ELEMENTS_COUNT = 1023;
 
-        protected const string MEMORY_NAME = "KeyNotification";
+        protected const string MEMORY_NAME = "KeyNotificationMap";
 
         public abstract void Dispose();
     }

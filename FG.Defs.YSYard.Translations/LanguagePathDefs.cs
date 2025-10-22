@@ -4,20 +4,15 @@ namespace FG.Defs.YSYard.Translations
 {
     public class LanguagePathDefs
     {
-        private const string TRANSLATED_LANGUAGES_SERIALIZED = "translatedLanguages.json";
-
-        private const string TRANSLATED_LANGUAGE_TALKS_SERIALIZED = "translatedLanguageTalks.json";
+        private const string TL_DATA_SERIALIZED = "tldata.json";
 
         public string PluginRootPath
         {
             get;
         } = "nowhere";
 
-        public string TranslatedLanguagesSerializedPath
-            => Path.Combine(this.PluginRootPath, TRANSLATED_LANGUAGES_SERIALIZED);
-
-        public string TranslatedLanguageTalksSerializedPath
-            => Path.Combine(this.PluginRootPath, TRANSLATED_LANGUAGE_TALKS_SERIALIZED);
+        public string TlDataSerializedPath
+            => Path.Combine(this.PluginRootPath, TL_DATA_SERIALIZED);
 
         public bool IsValid
         {

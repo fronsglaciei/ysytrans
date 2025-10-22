@@ -10,10 +10,11 @@ public static class LanguageTalkManager_GetItem_Patch
 {
     public static void Postfix(ref LanguageTalk __result, int key)
     {
-        KeyNotifier.Notify(new KeyNotification
+        KeyNotifier.Notify(new LanguageKey
         {
             KeyType = LanguageKeyTypes.LanguageTalk,
-            Key = key
+            Key = key,
+            TimeStamp = System.DateTime.Now,
         });
     }
 }
