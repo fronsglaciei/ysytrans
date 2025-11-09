@@ -18,9 +18,16 @@ public class TranslationApiService(IWritableOptions<AppConfig> config)
             ["text"] = text
         });
         using var client = new HttpClient();
-        var res = await client.GetAsync(
+        try
+        {
+            var res = await client.GetAsync(
             $"{url}?{await content.ReadAsStringAsync(token).ConfigureAwait(false)}", token)
-            .ConfigureAwait(false);
-        return await res.Content.ReadAsStringAsync(token).ConfigureAwait(false);
+                .ConfigureAwait(false);
+            return await res.Content.ReadAsStringAsync(token).ConfigureAwait(false);
+        }
+        catch
+        {
+            return "レスポンスエラー";
+        }
     }
 }

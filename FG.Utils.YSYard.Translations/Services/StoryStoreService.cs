@@ -69,6 +69,22 @@ public class StoryStoreService
         return this.TryGetStory(kn.Key, out story);
     }
 
+    public bool TryGetStoryFirstPair(
+        string storyName, [MaybeNullWhen(false)] out StoryTalkPair talkPair)
+    {
+        talkPair = default;
+        if (!this._storyDict.Dict.TryGetValue(storyName, out var pairs))
+        {
+            return false;
+        }
+        if (pairs.Count < 1)
+        {
+            return false;
+        }
+        talkPair = pairs[0];
+        return true;
+    }
+
     public bool TryGetPlaceholderStory(
         [MaybeNullWhen(false)] out (string storyName, StoryTalkPair talkPair) story)
     {

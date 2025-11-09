@@ -1,6 +1,4 @@
-﻿using Example;
-using FG.Defs.YSYard.Translations;
-using System.Collections.Generic;
+﻿using FG.Defs.YSYard.Translations;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -9,29 +7,7 @@ namespace FG.Mods.YSYard.Translations.Services;
 
 public static class TranslationProvider
 {
-    public const int KEY_EXPLORATION_LEVEL_MAX = -10000000;
-
-    public const int KEY_MINING_LEVEL_MAX = -10000001;
-
-    private static readonly Dictionary<int, Language> _extraLangCache = new()
-    {
-        [KEY_EXPLORATION_LEVEL_MAX] = new()
-        {
-            Key = KEY_EXPLORATION_LEVEL_MAX,
-            Chinese = "探险已经达到最高等级",
-            ChineseFT = "探險已經達到最高等級",
-            LanguageEng = "Reached Lv.MAX",
-            LanguageJpn = "最高レベルに到達"
-        },
-        [KEY_MINING_LEVEL_MAX] = new()
-        {
-            Key = KEY_MINING_LEVEL_MAX,
-            Chinese = "探险已经达到最高等级",
-            ChineseFT = "探險已經達到最高等級",
-            LanguageEng = "Reached Lv.MAX",
-            LanguageJpn = "最高レベルに到達"
-        }
-    };
+    //private static readonly Dictionary<int, Language> _extraLangCache = [];
 
     private static readonly DataContractJsonSerializerSettings _serializerSettings = new()
     {
@@ -70,23 +46,29 @@ public static class TranslationProvider
     public static bool TryGetLanguageTalkTranslation(int key, out string languageTalkTranslation)
         => _tlData.LanguageTalks.TryGetValue(key, out languageTalkTranslation);
 
-    public static void InjectExtraLanguages()
-    {
-        var la = LanguageManager.mItemArray;
-        if (la == null || la.Keys == null || la.Items == null)
-        {
-            return;
-        }
+    //public static void InjectExtraLanguages()
+    //{
+    //    //var la = LanguageManager.mItemArray;
+    //    var la = hm.waj;
+    //    //if (la == null || la.Keys == null || la.Items == null)
+    //    if (la == null || la.xmf == null || la.xmg == null)
+    //    {
+    //        return;
+    //    }
 
-        foreach (var kvp in _extraLangCache)
-        {
-            if (LanguageManager.mKeyIndexMap.ContainsKey(kvp.Key))
-            {
-                continue;
-            }
-            la.Keys.Add(kvp.Key);
-            la.Items.Add(kvp.Value);
-            LanguageManager.mKeyIndexMap[kvp.Key] = la.Keys.Count - 1;
-        }
-    }
+    //    foreach (var kvp in _extraLangCache)
+    //    {
+    //        //if (LanguageManager.mKeyIndexMap.ContainsKey(kvp.Key))
+    //        if (hm.wak.ContainsKey(kvp.Key))
+    //        {
+    //            continue;
+    //        }
+    //        //la.Keys.Add(kvp.Key);
+    //        la.xmf.Add(kvp.Key);
+    //        //la.Items.Add(kvp.Value);
+    //        la.xmg.Add(kvp.Value);
+    //        //LanguageManager.mKeyIndexMap[kvp.Key] = la.Keys.Count - 1;
+    //        hm.wak[kvp.Key] = la.xmf.Count - 1;
+    //    }
+    //}
 }

@@ -3,10 +3,10 @@ using HarmonyLib;
 
 namespace FG.Mods.YSYard.Translations.Patches;
 
-[HarmonyPatch(typeof(VideoPlayerWnd), nameof(VideoPlayerWnd.OnInit))]
+[HarmonyPatch(typeof(iz), nameof(iz.cnm))]
 public static class VideoPlayerWnd_OnInit_Patch
 {
-    public static void Postfix(VideoPlayerWnd __instance)
+    public static void Postfix(iz __instance)
     {
         SubtitleManager.OnVideoPlayerInit(__instance);
     }

@@ -8,7 +8,7 @@ Unity汎用Moddingフレームワークの**BepInEx**のプラグインとして
 
 当MODの最新版は以下の環境で作成および動作確認しています.
 
-* Yog-Sothoth's Yard - steam v1.0.12
+* Yog-Sothoth's Yard - steam 2nd Anniversary Update(+ hotfix 25/10/27)
 * BepInEx IL2CPP 6.0.0-pre.2
 * Windows 11
 
@@ -45,10 +45,10 @@ Program Files以下など管理者権限が必要なディレクトリにイン�
     * core等のBepInEx公式フォルダ
     * **plugins**
       * **FG.Mods.YSYard.Translations**
+        * **End.mp4.srt**
         * **FG.Defs.YSYard.Translations.dll**
         * **FG.Mods.YSYard.Translations.dll**
-        * **translatedLanguages.json**
-        * **translatedLanguageTalks.json**
+        * **tldata.json**
 
 ![ファイルの配置](assets/00_directory.png "ファイルの配置")
 
@@ -66,12 +66,11 @@ MODの導入に成功すると, ゲーム内設定画面で日本語が選択可
 
 ## MOD削除
 
-以下の手順に従って削除してください.
+MODを削除する場合は, 導入の際に追加した全ファイルを削除してください.
 
-1. ゲーム内設定画面で中国語か英語を選択して終了
-2. MOD導入の際に追加した全ファイルを削除
+ゲームが正常に終了されなかった場合, 日本語選択状態が保存されたままになってしまう可能性があります. この状態では, 公式の仮置き日本語テキストが表示されてしまいます.
 
-手順1を忘れてファイルを削除してしまった場合も同様に, ゲーム内設定画面で中国語か英語を選択してゲームを終了してください.
+当該の症状が発生している場合は, 設定画面で**英語**を選択すると, 正常なゲーム状態に戻ります.
 
 ## 注意
 

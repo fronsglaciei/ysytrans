@@ -151,6 +151,11 @@ public class TranslationPageViewModel(
         get; set;
     }
 
+    public int? TranslationSearchKey
+    {
+        get; set;
+    }
+
     public SearchRanges SelectedSearchRange
     {
         get; set;
@@ -167,6 +172,11 @@ public class TranslationPageViewModel(
     }
 
     public int? SelectedStorySentenceKey
+    {
+        get; set;
+    }
+
+    public int? StorySearchKey
     {
         get; set;
     }
@@ -263,6 +273,7 @@ public class TranslationPageViewModel(
             ignoreList.Add(vm.NotifiedKey);
             vm.IsIgnored = true;
         }
+        ignoreList.Save();
         if (this.FilterIgnored)
         {
             keyNotification.ForceNotifyAll();
@@ -291,6 +302,34 @@ public class TranslationPageViewModel(
 
     public void SelectNextContainer()
         => this.SelectOffsetContainer(1);
+
+    public void SearchContainerByKey()
+    {
+        if (this.SelectedType == null)
+        {
+            snackbar.Snackbar?.Add(
+                "キータイプが選択されていません",
+                MudBlazor.Severity.Error);
+            return;
+        }
+        if (this.TranslationSearchKey == null)
+        {
+            return;
+        }
+
+        if (!tlStore.TryGetContainer(
+            this.SelectedType.Value, this.TranslationSearchKey.Value, out var container))
+        {
+            return;
+        }
+        keyNotification.ForceNotify([
+            new()
+            {
+                KeyType = this.SelectedType.Value,
+                Key = this.TranslationSearchKey.Value,
+                TimeStamp = DateTime.Now
+            }]);
+    }
 
     public void SearchTextPattern()
     {
@@ -337,6 +376,22 @@ public class TranslationPageViewModel(
 
         this.SetStoryProperties(
             story.storyName, story.talkPair.SentenceKey, story.talkPair.SpeakerKey);
+    }
+
+    public void SearchStoryByName()
+    {
+        if (this.StorySearchKey == null)
+        {
+            return;
+        }
+        var storyName = $"{this.StorySearchKey.Value}";
+        if (!storyStore.TryGetStoryFirstPair(storyName, out var talkPair))
+        {
+            return;
+        }
+
+        this.SetStoryProperties(
+            storyName, talkPair.SentenceKey, talkPair.SpeakerKey);
     }
 
     public void ExportDocx()

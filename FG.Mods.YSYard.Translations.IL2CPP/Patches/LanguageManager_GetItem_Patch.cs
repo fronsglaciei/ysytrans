@@ -4,14 +4,15 @@ using HarmonyLib;
 
 namespace FG.Mods.YSYard.Translations.Patches;
 
-[HarmonyPatch(typeof(LanguageManager), nameof(LanguageManager.GetItem))]
+[HarmonyPatch(typeof(hm), nameof(hm.GetItem))]
 public static class LanguageManager_GetItem_Patch
 {
     public static void Postfix(ref Language __result, int key)
     {
         if (__result != null && TranslationProvider.TryGetLanguageTranslation(key, out var translation))
         {
-            __result.LanguageJpn = translation;
+            //__result.LanguageJpn = translation;
+            __result.xmd = translation;
         }
     }
 }

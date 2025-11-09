@@ -64,7 +64,7 @@
             </MudExpansionPanels>
             <MudField Label="通知リスト" Underline="false" Class="w-100 mb-2">
                 <MudStack Spacing="1" Class="w-100" Style="height: calc(100vh - 16.5rem); overflow-y: auto;">
-                    @foreach (var slcvm in ViewModel.NotifiedLanguages)
+                    @foreach (var slcvm in ViewModel.NotifiedLanguages.Reverse<StagingLanguageContainerViewModel>())
                     {
                         <div class="w-100 p-2 rounded notified-lang" @onclick="@(() => ViewModel.SelectLanguageContainer(slcvm))">
                             <div class="d-flex gap-2 align-items-center">
@@ -157,8 +157,8 @@
             <MudExpansionPanels Class="w-100">
                 <MudExpansionPanel>
                     <TitleContent>
-                        <MudText Typo="Typo.h6">キーで取得</MudText>
-                        <MudText Typo="Typo.caption">キー番号で翻訳対象を直接指定します.</MudText>
+                        <MudText Typo="Typo.h6">キー情報</MudText>
+                        <MudText Typo="Typo.caption">選択中のキー情報を表示します.</MudText>
                     </TitleContent>
                     <ChildContent>
                         <MudStack Spacing="1">
@@ -169,10 +169,13 @@
                             <div class="d-flex gap-1">
                                 <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft"
                                     OnClick="ViewModel.SelectPreviousContainer" />
-                                <MudTextField @bind-Value="ViewModel.SelectedKey" Label="キー" ReadOnly />
+                                <MudTextField @bind-Value="ViewModel.SelectedKey" Label="キー" Disabled ReadOnly />
                                 <MudIconButton Icon="@Icons.Material.Filled.ArrowRight"
                                     OnClick="ViewModel.SelectNextContainer" />
                             </div>
+                            <MudTextField @bind-Value="ViewModel.TranslationSearchKey" Label="現在のタイプのキーを検索"
+                                Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                                OnAdornmentClick="ViewModel.SearchContainerByKey" />
                         </MudStack>
                     </ChildContent>
                 </MudExpansionPanel>
@@ -204,14 +207,14 @@
                             <div class="d-flex gap-1">
                                 <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft"
                                     OnClick="ViewModel.SelectPreviousStory" />
-                                <MudTextField @bind-Value="ViewModel.SelectedStory" Label="ストーリー名" ReadOnly />
+                                <MudTextField @bind-Value="ViewModel.SelectedStory" Label="ストーリー名" Disabled ReadOnly />
                                 <MudIconButton Icon="@Icons.Material.Filled.ArrowRight"
                                     OnClick="ViewModel.SelectNextStory" />
                             </div>
                             <div class="d-flex gap-1">
                                 <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft"
                                     OnClick="ViewModel.SelectPreviousStoryTalk" />
-                                <MudTextField @bind-Value="ViewModel.SelectedStorySentenceKey" Label="キー名" ReadOnly />
+                                <MudTextField @bind-Value="ViewModel.SelectedStorySentenceKey" Label="キー名" Disabled ReadOnly />
                                 <MudIconButton Icon="@Icons.Material.Filled.ArrowRight"
                                     OnClick="ViewModel.SelectNextStoryTalk" />
                             </div>
@@ -219,6 +222,9 @@
                                 OnClick="ViewModel.SelectStoryBySelectedContainer">
                                 選択中のキーを含むストーリーをセット
                             </MudButton>
+                            <MudTextField @bind-Value="ViewModel.StorySearchKey" Label="ストーリー名を検索"
+                                Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
+                                OnAdornmentClick="ViewModel.SearchStoryByName" />
                         </MudStack>
                     </ChildContent>
                 </MudExpansionPanel>
