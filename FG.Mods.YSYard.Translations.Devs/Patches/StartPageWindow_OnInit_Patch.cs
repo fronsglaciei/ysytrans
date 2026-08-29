@@ -41,20 +41,20 @@ public static class StartPageWindow_OnInit_Patch
     {
         // lifts up VerticalLayoutGroup
         //var parent = window.Discord.transform.parent;
-        var parent = window.bcwm.transform.parent;
+        var parent = window.bcwu.transform.parent;
         var rtParent = parent.GetComponent<RectTransform>();
         rtParent.localPosition += new Vector3(0f, 40f, 0f);
 
         // clone
         //var obj = GameObject.Instantiate(window.Discord);
-        var obj = GameObject.Instantiate(window.bcwm);
+        var obj = GameObject.Instantiate(window.bcwu);
 
         obj.name = objName;
         GameObject.Destroy(obj.GetComponent<DOTweenAnimation>());
 
         // add cloned object to VerticalLayoutGroup
         //obj.transform.SetParent(window.Discord.transform.parent, false);
-        obj.transform.SetParent(window.bcwm.transform.parent, false);
+        obj.transform.SetParent(window.bcwu.transform.parent, false);
 
         var rt = obj.GetComponent<RectTransform>();
         rt.localPosition = new Vector3(rt.localPosition.x, rt.localPosition.y - 20f, 0);
@@ -67,19 +67,19 @@ public static class StartPageWindow_OnInit_Patch
         {
             var tmpRt = obj.GetComponent<RectTransform>();
             //var tipsRt = window.TipsBG.GetComponent<RectTransform>();
-            var tipsRt = window.bcwr.GetComponent<RectTransform>();
+            var tipsRt = window.bcwz.GetComponent<RectTransform>();
             tipsRt.anchoredPosition = tmpRt.anchoredPosition;
             tipsRt.anchoredPosition += new Vector2(-20f, 0f);
             //window.Tips.text = tips;
-            window.bcws.text = tips;
+            window.bcxa.text = tips;
             //window.TipsBG.gameObject.SetActive(true);
-            window.bcwr.gameObject.SetActive(true);
+            window.bcwz.gameObject.SetActive(true);
         });
         mie.mPointEnterCallback = onPointerEnter;
         Il2CppSystem.Action onPointerExit = new System.Action(() =>
         {
             //window.TipsBG.gameObject.SetActive(false);
-            window.bcwr.gameObject.SetActive(false);
+            window.bcwz.gameObject.SetActive(false);
         });
         mie.mPointExitCallback = onPointerExit;
 

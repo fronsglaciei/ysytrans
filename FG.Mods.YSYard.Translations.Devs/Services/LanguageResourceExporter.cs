@@ -13,7 +13,7 @@ public static class LanguageResourceExporter
 {
     private const string STORY_MAP_PATH = "Story/storyMap";
 
-    private static readonly DataContractJsonSerializerSettings _jSettings = new DataContractJsonSerializerSettings
+    private static readonly DataContractJsonSerializerSettings _jSettings = new()
     {
         UseSimpleDictionaryFormat = true,
     };
@@ -30,7 +30,7 @@ public static class LanguageResourceExporter
         var stgSerializer = new DataContractJsonSerializer(typeof(StagingLanguage), _jSettings);
         var obj = new StagingLanguage();
         //foreach (var x in LanguageManager.Instance.GetAllItem().Items)
-        foreach (var x in hm.bgvk.dzi().xmg)
+        foreach (var x in hm.bgvs.dzj().xml)
         {
 
             //obj.Languages[x.Key] = new StagingLanguageContainer
@@ -40,16 +40,16 @@ public static class LanguageResourceExporter
             //    English = string.IsNullOrEmpty(x.LanguageEng) ? string.Empty : x.LanguageEng,
             //    Placeholder = string.IsNullOrEmpty(x.LanguageJpn) ? string.Empty : x.LanguageJpn,
             //};
-            obj.Languages[x.xlz] = new()
+            obj.Languages[x.xme] = new()
             {
-                Key = x.xlz,
-                Original = string.IsNullOrEmpty(x.xma) ? string.Empty : x.xma,
-                English = string.IsNullOrEmpty(x.xmc) ? string.Empty : x.xmc,
-                Placeholder = string.IsNullOrEmpty(x.xmd) ? string.Empty : x.xmd
+                Key = x.xme,
+                Original = string.IsNullOrEmpty(x.xmf) ? string.Empty : x.xmf,
+                English = string.IsNullOrEmpty(x.xmh) ? string.Empty : x.xmh,
+                Placeholder = string.IsNullOrEmpty(x.xmi) ? string.Empty : x.xmi
             };
         }
         //foreach (var x in LanguageTalkManager.Instance.GetAllItem().Items)
-        foreach (var x in hn.bgvl.dzk().xmp)
+        foreach (var x in hn.bgvt.dzl().xmu)
         {
             //obj.LanguageTalks[x.Key] = new StagingLanguageContainer
             //{
@@ -58,12 +58,12 @@ public static class LanguageResourceExporter
             //    English = string.IsNullOrEmpty(x.LanguageEng) ? string.Empty : x.LanguageEng,
             //    Placeholder = string.IsNullOrEmpty(x.LanguageJP) ? string.Empty : x.LanguageJP,
             //};
-            obj.LanguageTalks[x.xmh] = new()
+            obj.LanguageTalks[x.xmm] = new()
             {
-                Key = x.xmh,
-                Original = string.IsNullOrEmpty(x.xmi) ? string.Empty : x.xmi,
-                English = string.IsNullOrEmpty(x.xml) ? string.Empty : x.xml,
-                Placeholder = string.IsNullOrEmpty(x.xmm) ? string.Empty : x.xmm
+                Key = x.xmm,
+                Original = string.IsNullOrEmpty(x.xmn) ? string.Empty : x.xmn,
+                English = string.IsNullOrEmpty(x.xmq) ? string.Empty : x.xmq,
+                Placeholder = string.IsNullOrEmpty(x.xmr) ? string.Empty : x.xmr
             };
         }
         using var fs = new FileStream(PathProvider.PathDef.StagingJsonPath, FileMode.Create);
@@ -73,7 +73,7 @@ public static class LanguageResourceExporter
     public static void ExportStoryPlots()
     {
         //var storyMap = ResourcesManager.Instance.Load<StoryMapData>(STORY_MAP_PATH);
-        var storyMap = dg.bgsd.Load<StoryMapData>(STORY_MAP_PATH);
+        var storyMap = dg.bgsl.Load<StoryMapData>(STORY_MAP_PATH);
         if (storyMap == null)
         {
             return;
@@ -83,21 +83,21 @@ public static class LanguageResourceExporter
         foreach (var m in storyMap.maps)
         {
             //var levelDataBytes = ResourcesManager.Instance.Load<TextAsset>(m.path);
-            var levelDataBytes = dg.bgsd.Load<TextAsset>(m.path);
+            var levelDataBytes = dg.bgsl.Load<TextAsset>(m.path);
             if (levelDataBytes == null || levelDataBytes.bytes.Length < 1)
             {
                 continue;
             }
 
             //var levelData = UtilitySpace.Utility.Deserialize2Proto<LevelData>(levelDataBytes.bytes);
-            var levelData = UtilitySpace.bhi.lrs<bjs>(levelDataBytes.bytes);
+            var levelData = UtilitySpace.bhi.lrx<bjs>(levelDataBytes.bytes);
             if (levelData == null)
             {
                 continue;
             }
 
             //var t = LevelDesignerUtility.LoadTaskSource(levelData.EntrySource).TryCast<EntryTask>();
-            var t = bmp.ngq(levelData.bdnc).TryCast<EntryTask>();
+            var t = bmp.ngv(levelData.bdnk).TryCast<EntryTask>();
             if (t == null)
             {
                 continue;
@@ -130,7 +130,7 @@ public static class LanguageResourceExporter
             if (pt == null)
             {
                 //var tt = child.GetTaskType();
-                var tt = child.nhn();
+                var tt = child.nhs();
                 var stp = new StoryTalkPair();
                 switch (tt)
                 {
@@ -139,14 +139,14 @@ public static class LanguageResourceExporter
                         if (s != null)
                         {
                             //var conv = ConversationManager.Instance.GetItem(s.Data.conversationID);
-                            var conv = gr.bgup.GetItem(s.bhkx.bdrq);
+                            var conv = gr.bgux.GetItem(s.bhlf.bdry);
                             if (conv != null)
                             {
                                 //stp.SpeakerKey = conv.CharacterID;
-                                stp.SpeakerKey = conv.xem;
+                                stp.SpeakerKey = conv.xer;
                             }
                             //stp.SentenceKey = s.Data.conversationID;
-                            stp.SentenceKey = s.bhkx.bdrq;
+                            stp.SentenceKey = s.bhlf.bdry;
                         }
                         break;
 
@@ -163,7 +163,7 @@ public static class LanguageResourceExporter
                         if (spm != null)
                         {
                             //stp.SentenceKey = spm.Data.message.languageTalk;
-                            stp.SentenceKey = spm.bhkx.bdul.bdox;
+                            stp.SentenceKey = spm.bhlf.bdut.bdpf;
                         }
                         break;
                 }
@@ -175,7 +175,7 @@ public static class LanguageResourceExporter
             else
             {
                 //if (pt.GetTaskType() == TaskType.OptionalPrivateMessage)
-                if (pt.nhn() == blr.OptionalPrivateMessage)
+                if (pt.nhs() == blr.OptionalPrivateMessage)
                 {
                     var opm = pt.TryCast<OptionalPrivateMessage>();
                     if (opm != null)
@@ -185,7 +185,7 @@ public static class LanguageResourceExporter
                             list.Add(new()
                             {
                                 //SentenceKey = x.languageTalk
-                                SentenceKey = x.bdox
+                                SentenceKey = x.bdpf
                             });
                         }
                     }

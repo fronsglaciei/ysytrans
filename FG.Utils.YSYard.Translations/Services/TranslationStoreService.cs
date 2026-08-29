@@ -48,13 +48,7 @@ public class TranslationStoreService : IDisposable
     }
 
     public void SetOutputDir(string outputDir)
-    {
-        this._langPathDef = new LanguagePathDefs(outputDir);
-        if (!this._langPathDef.IsValid)
-        {
-            return;
-        }
-    }
+        => this._langPathDef = new LanguagePathDefs(outputDir);
 
     public void SetStagingDir(string stagingDir)
     {

@@ -20,7 +20,7 @@ internal static class SubtitleManager
     internal static void OnVideoPlayerInit(iz vpw)
     {
         //var bg = vpw.mGameObject.transform.Find("BG");
-        var bg = vpw.zqb.transform.Find("BG");
+        var bg = vpw.zqj.transform.Find("BG");
         var textRef = bg.Find("Text").GetComponent<Text>();
 
         var goSt = new GameObject("Subtitle");
@@ -40,8 +40,8 @@ internal static class SubtitleManager
             if (flag)
             {
                 goSt.SetActive(true);
-                subtitle.biih = textSt;
-                subtitle.biig = vpw.wic;
+                subtitle.biip = textSt;
+                subtitle.biio = vpw.wih;
             }
             else
             {
@@ -77,15 +77,15 @@ internal static class SubtitleManager
         _resetListener.Invoke(true);
 
         //var player = vpw.mMediaPlayer;
-        var player = vpw.wic;
+        var player = vpw.wih;
         //player.SideloadSubtitles = true;
         player._sideloadSubtitles = true;
         //player.EnableSubtitles(
         //    new(fullSrtPath, MediaPathType.AbsolutePathOrURL));
-        player.tyw(new(fullSrtPath, cib.AbsolutePathOrURL));
+        player.tzb(new(fullSrtPath, cib.AbsolutePathOrURL));
     }
 
     internal static void ClearSrt(iz vpw)
         //=>vpw.mMediaPlayer.DisableSubtitles();
-        => vpw.wic.tyy();
+        => vpw.wih.tzd();
 }

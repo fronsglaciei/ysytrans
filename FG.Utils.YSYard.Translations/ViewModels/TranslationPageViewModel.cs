@@ -193,9 +193,7 @@ public class TranslationPageViewModel(
 
     protected override void OnPageEnterInternal()
     {
-        this.PluginIsFound =
-            new LanguagePathDefs(this.PluginMainDirPath).IsValid
-            && new DevelopmentPathDefs(this.PluginDevDirPath).IsValid;
+        this.PluginIsFound = new DevelopmentPathDefs(this.PluginDevDirPath).IsValid;
         keyNotification.RegisterCallback(this.OnKeyNotified);
     }
 
@@ -208,9 +206,7 @@ public class TranslationPageViewModel(
         }
 
         this.PluginMainDirPath = path;
-        this.PluginIsFound =
-            new LanguagePathDefs(this.PluginMainDirPath).IsValid
-            && new DevelopmentPathDefs(this.PluginDevDirPath).IsValid;
+        this.PluginIsFound = new DevelopmentPathDefs(this.PluginDevDirPath).IsValid;
         tlStore.SetOutputDir(this.PluginMainDirPath);
         appConfig.Update(x =>
         {
@@ -227,9 +223,7 @@ public class TranslationPageViewModel(
         }
 
         this.PluginDevDirPath = path;
-        this.PluginIsFound =
-            new LanguagePathDefs(this.PluginMainDirPath).IsValid
-            && new DevelopmentPathDefs(this.PluginDevDirPath).IsValid;
+        this.PluginIsFound = new DevelopmentPathDefs(this.PluginDevDirPath).IsValid;
         tlStore.SetStagingDir(this.PluginDevDirPath);
         appConfig.Update(x =>
         {
@@ -376,6 +370,30 @@ public class TranslationPageViewModel(
 
         this.SetStoryProperties(
             story.storyName, story.talkPair.SentenceKey, story.talkPair.SpeakerKey);
+    }
+
+    public void NotifyUntranslatedKeysInStory()
+    {
+        if (string.IsNullOrEmpty(this.SelectedStory))
+        {
+            return;
+        }
+
+        keyNotification.ForceNotify([.. storyStore.GetAllLanguageTalkKeys(this.SelectedStory)
+            .Select(x =>
+                tlStore.TryGetContainer(
+                    LanguageKeyTypes.LanguageTalk, x, out var slc)
+                ? slc : null)
+            .Where(x =>
+                x is not null
+                && string.IsNullOrEmpty(x.Japanese))
+            .OfType<StagingLanguageContainer>()
+            .Select(x => new LanguageKey
+            {
+                KeyType = LanguageKeyTypes.LanguageTalk,
+                Key = x.Key,
+                TimeStamp = DateTime.Now
+            })]);
     }
 
     public void SearchStoryByName()

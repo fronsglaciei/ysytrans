@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace FG.Mods.YSYard.Translations.Patches;
 
-[HarmonyPatch(typeof(iz), nameof(iz.ehr))]
+[HarmonyPatch(typeof(iz), nameof(iz.ehs))]
 public static class VideoPlayerWnd_BuffingVideo_Patch
 {
     public static void Postfix(string a, iz __instance)

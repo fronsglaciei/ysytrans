@@ -222,6 +222,10 @@
                                 OnClick="ViewModel.SelectStoryBySelectedContainer">
                                 選択中のキーを含むストーリーをセット
                             </MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.NotificationImportant"
+                                OnClick="ViewModel.NotifyUntranslatedKeysInStory">
+                                選択中ストーリーの未翻訳キーを通知
+                            </MudButton>
                             <MudTextField @bind-Value="ViewModel.StorySearchKey" Label="ストーリー名を検索"
                                 Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
                                 OnAdornmentClick="ViewModel.SearchStoryByName" />

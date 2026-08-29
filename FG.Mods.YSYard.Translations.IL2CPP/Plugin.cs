@@ -17,8 +17,6 @@ public class Plugin : BasePlugin
     {
         Log = base.Log;
 
-        ConfigProvider.Init(this.Config);
-
         var assembly = Assembly.GetExecutingAssembly();
         PathProvider.Init(Path.GetDirectoryName(assembly.Location));
 

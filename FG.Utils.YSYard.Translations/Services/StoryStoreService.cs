@@ -148,6 +148,27 @@ public class StoryStoreService
         return true;
     }
 
+    public List<int> GetAllLanguageTalkKeys(string storyName)
+    {
+        var ret = new List<int>();
+        if (!this._storyDict.Dict.TryGetValue(storyName, out var pairs))
+        {
+            return ret;
+        }
+        foreach (var pair in pairs)
+        {
+            if (0 < pair.SentenceKey)
+            {
+                ret.Add(pair.SentenceKey);
+            }
+            if (0 < pair.SpeakerKey)
+            {
+                ret.Add(pair.SpeakerKey);
+            }
+        }
+        return ret;
+    }
+
     private void LoadDictionary()
     {
         var json = File.ReadAllText(this._devPathDef.StoryPath);

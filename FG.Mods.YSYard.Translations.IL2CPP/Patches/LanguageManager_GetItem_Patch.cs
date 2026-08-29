@@ -12,7 +12,7 @@ public static class LanguageManager_GetItem_Patch
         if (__result != null && TranslationProvider.TryGetLanguageTranslation(key, out var translation))
         {
             //__result.LanguageJpn = translation;
-            __result.xmd = translation;
+            __result.xmi = translation;
         }
     }
 }
